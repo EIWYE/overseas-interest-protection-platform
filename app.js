@@ -4549,7 +4549,7 @@ var INTELCENTER={
     setVal('aireport-el-result',results.join('；'));
     showToast('\u{1F916} AI\u5df2\u6839\u636e\u9009\u4e2d\u7d20\u6750\u81ea\u52a8\u586b\u5145\u516d\u8981\u7d20');
   },
-  // AI一键生成 - 公文风格情报分析报告（2000-3000字）
+  // AI一键生成 - 公文风格情报分析报告（3000-3500字）
   _aiGenerate(){
     if(this._selectedMaterials.length===0){showToast('请先选择至少1个素材');return;}
     this._aiAutoFill();
@@ -4649,6 +4649,16 @@ var INTELCENTER={
       '展望未来，'+countryStr+'安全形势展望不容乐观。威胁因素短期内难以根除，中资企业须保持高度警戒、前置布防。建议加强长效机制建设，压实日常监测、动态评估、及时响应各环节。中期看，区域安全格局取决于多重因素演变，须动态评估、及时调整策略。各企业须充分评估业务前景、制定差异化策略。对高风险区域的在建项目，应重新评估投资回报与安全风险的平衡；对规划中的新项目，应将安全成本纳入可行性研究。加强与使领馆、行业协会的长期合作，建立区域安全共同体。'
     ]));
 
+    tParts.push(pick([
+      '国际舆论环境方面，涉事区域信息战态势日趋复杂。经情报监测发现，部分西方媒体及非政府组织借涉事区域安全事件炒作所谓"中国威胁论"，将中资企业正常商业活动政治化、安全化，企图在国际舆论场上制造对华不利氛围。从舆论传播规律来看，虚假信息往往先于真实事件传播，形成先入为主的舆论定势，后续辟谣难度极大。中资企业可能面临声誉受损、社区关系恶化、当地民众排斥等间接安全威胁。建议各级指挥机构加强国际舆论监测，建立虚假信息辨识与应对机制，及时通过权威渠道发布真实信息、澄清不实传言。各企业须加强社区沟通、履行社会责任，以实际行动赢得当地民众理解与支持。',
+      '国际舆论与信息战方面，涉事区域信息环境持续恶化。经多源情报确认，部分势力利用社交媒体平台散布涉华虚假信息，将中资企业项目歪曲为"资源掠夺""债务陷阱"，煽动当地民众对华不满情绪。从信息传播的特点来看，社交媒体上的虚假信息传播速度远超官方辟谣，且具有跨国界、跨平台、跨语种的扩散能力。舆论环境的恶化可能引发针对中资企业的抗议活动、暴力袭击，甚至影响东道国政府对华合作意愿。建议各企业建立舆情监测团队，密切跟踪当地媒体和社交平台上的涉华报道，及时上报敏感信息。加强与当地媒体沟通，主动宣传企业社会责任成果，塑造良好企业形象。'
+    ]));
+
+    tParts.push(pick([
+      '法律与制裁风险方面，涉事区域可能面临国际制裁、出口管制、投资审查等多重法律风险。经分析研判，部分国家可能利用涉事区域安全局势，对中国企业和个人实施精准制裁或次级制裁，限制中资企业的融资、贸易和技术合作。从法律风险的传导路径来看，制裁措施不仅直接影响被制裁企业的业务运营，还通过金融系统、供应链网络产生连锁效应，波及上下游合作伙伴。此外，涉事国家国内法的变动也可能对中资企业的合规经营构成挑战。建议各企业全面梳理涉事区域的制裁清单和合规要求，建立制裁风险预警机制，对高风险业务线进行压力测试。加强与法律顾问的沟通，确保业务运营符合国际法和国内法双重要求。',
+      '法律合规与制裁风险方面，经情报分析，涉事区域可能面临多边制裁、出口管制、投资审查等法律风险叠加的局面。部分国家可能以安全为由对中国企业和个人实施精准制裁，通过金融系统限制资金往来，通过技术管制切断关键供应链。从制裁影响的深度来看，不仅被直接制裁的企业遭受损失，其交易对手、上下游合作伙伴也可能因次级制裁效应而受到牵连。涉事国家国内法的修订也可能增加中资企业的合规成本和运营不确定性。建议各企业建立完善的制裁风险筛查机制，对交易对手进行全面尽职调查，确保业务合规。加强与专业法律机构的合作，定期评估法律风险变化，制定应对预案。'
+    ]));
+
     var threatEl=document.getElementById('aireport-threat');
     if(threatEl)threatEl.value=tParts.join('\n\n');
 
@@ -4686,6 +4696,11 @@ var INTELCENTER={
     aParts.push(pick([
       '合规与法律方面，建议各企业加强涉外合规管理、法律风险防控。充分了解涉事国家法律法规、监管政策，确保业务合规运营。加强合同管理，确保合同条款符合当地法律。对于受制裁领域、敏感行业，建议加强法律咨询、评估合规风险。加强与当地律师、法律顾问的合作，确保企业权益得到法律保障。建立法律风险预警机制，及时识别、评估法律风险。建议各企业制定合规管理制度、定期评估、动态调整。建立涉外法律顾问制度，聘请熟悉当地法律的专业律师；加强合同审查，确保合同条款的合法性和可执行性；建立合规培训制度，提升员工的合规意识。关注国际制裁动态，确保业务不触碰制裁红线。对涉及敏感技术的出口业务，应严格遵守出口管制法规。',
       '合规与法律保障方面，建议各企业加强涉外合规管理、法律风险防控。充分了解涉事国家法律法规、监管政策，确保业务合规运营。加强合同管理、法律咨询，对受制裁领域加强风险评估。加强与当地律师合作，确保企业权益得到法律保障。建立法律风险预警机制、及时识别、评估。制定合规管理制度、定期评估、动态调整。关注国际制裁动态，确保业务合规。对涉及敏感技术的业务，严格遵守出口管制法规。建立合规事件处置机制，确保快速响应。'
+    ]));
+
+    aParts.push(pick([
+      '国际合作与多边机制方面，建议充分运用多边外交平台和国际合作机制，为海外利益保护营造有利外部环境。加强与联合国、上海合作组织、金砖国家等多边机制的协调配合，推动建立海外利益保护的多边合作框架。从国际合作的实践来看，单边保护手段效果有限，多边合作能够有效分散风险、共享资源、形成合力。建议各企业积极参与行业协会组织的联合安全倡议，共享安全信息、共建安保力量。加强与东道国政府的沟通协调，推动签署双边投资保护协定、安全合作谅解备忘录等法律文件。充分发挥华人华侨社团的桥梁作用，建立民间安全互助网络。通过多层次、多渠道的国际合作，构建全方位的海外利益保护体系。',
+      '多边合作与国际机制方面，建议各级指挥机构充分运用多边外交资源，为海外利益保护争取更广泛的国际支持。推动在上海合作组织、金砖国家、中国—东盟等框架下建立海外利益保护磋商机制，定期交换安全情报、协调应对行动。从多边合作的成效来看，集体行动比单边措施更具影响力和约束力，能够有效降低东道国对中资企业的歧视性待遇。建议各企业加强与行业协会、商会的协同合作，建立联合安保基金和共享安保力量。积极参与东道国社区建设和社会公益项目，以务实合作赢得当地政府和民众的支持。推动建立区域性中国企业安全联盟，形成信息共享、资源互助、联合应对的合作平台。'
     ]));
 
     var adviceEl=document.getElementById('aireport-advice');
@@ -4804,37 +4819,38 @@ var INTELCENTER={
     var lvLabel=lvMap[r.threatLevel]||'未定';
     var elLabels={time:'时间',place:'地点',person:'人物',cause:'起因',process:'过程',result:'结果'};
     var now=new Date().toLocaleString('zh-CN',{hour12:false}).replace(/\//g,'-');
+    function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
     var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">';
-    html+='<head><meta charset="utf-8"><title>'+r.title+'</title>';
+    html+='<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'+esc(r.title)+'</title>';
     html+='<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]-->';
     html+='<style>';
-    html+='@page{size:210mm 297mm;margin:2.54cm 3.17cm 2.54cm 3.17cm;}';
-    html+='body{font-family:"仿宋","FangSong","宋体","SimSun",serif;font-size:16pt;line-height:1.9;color:#000;text-align:justify;}';
-    html+='h1{font-family:"方正小标宋简体","黑体","SimHei",sans-serif;font-size:22pt;text-align:center;margin:0 0 6pt 0;font-weight:bold;}';
-    html+='h2{font-family:"黑体","SimHei",sans-serif;font-size:16pt;font-weight:bold;margin:18pt 0 6pt 0;text-indent:2em;}';
-    html+='p{text-indent:2em;margin:0 0 4pt 0;}';
-    html='.meta{text-align:center;font-size:14pt;color:#333;margin:0 0 18pt 0;text-indent:0;}';
+    html+='@page{size:210mm 297mm;margin:37mm 26mm 35mm 28mm;}';
+    html+='body{font-family:"仿宋","FangSong","仿宋_GB2312","宋体","SimSun",serif;font-size:16pt;line-height:28pt;color:#000;text-align:justify;}';
+    html+='h1{font-family:"方正小标宋简体","黑体","SimHei",sans-serif;font-size:22pt;text-align:center;margin:0 0 6pt 0;font-weight:bold;line-height:28pt;}';
+    html+='h2{font-family:"黑体","SimHei",sans-serif;font-size:16pt;font-weight:bold;margin:18pt 0 6pt 0;text-indent:2em;line-height:28pt;}';
+    html+='p{text-indent:2em;margin:0 0 0 0;line-height:28pt;}';
+    html='.meta{text-align:center;font-size:14pt;color:#333;margin:0 0 18pt 0;text-indent:0;line-height:28pt;}';
     html='.meta span{margin:0 12pt;}';
     html='.summary-box{border:1px solid #999;padding:12pt;margin:12pt 0;background:#f5f5f5;}';
-    html='.summary-box p{text-indent:2em;}';
+    html='.summary-box p{text-indent:2em;line-height:28pt;}';
     html='.element-table{width:100%;border-collapse:collapse;margin:12pt 0;font-size:14pt;}';
-    html='.element-table td{border:1px solid #999;padding:6pt 8pt;vertical-align:top;}';
+    html='.element-table td{border:1px solid #999;padding:6pt 8pt;vertical-align:top;line-height:28pt;}';
     html='.element-table .label{background:#e8e8e8;font-weight:bold;width:80pt;text-align:center;text-indent:0;}';
-    html='.threat-box p,.advice-box p{text-indent:2em;}';
-    html='.footer{margin-top:24pt;padding-top:8pt;border-top:1px solid #999;font-size:12pt;color:#666;text-align:center;text-indent:0;}';
+    html='.threat-box p,.advice-box p{text-indent:2em;line-height:28pt;}';
+    html='.footer{margin-top:24pt;padding-top:8pt;border-top:1px solid #999;font-size:12pt;color:#666;text-align:center;text-indent:0;line-height:28pt;}';
     html+='</style></head><body>';
 
-    html+='<h1>'+r.title+'</h1>';
+    html+='<h1>'+esc(r.title)+'</h1>';
     html+='<div class="meta">';
-    html+='<span>报告编号：'+r.id+'</span>';
-    html+='<span>威胁等级：'+lvLabel+'</span>';
-    html+='<span>编制时间：'+(r.createTime||now)+'</span>';
+    html+='<span>报告编号：'+esc(r.id)+'</span>';
+    html+='<span>威胁等级：'+esc(lvLabel)+'</span>';
+    html+='<span>编制时间：'+esc(r.createTime||now)+'</span>';
     html+='</div>';
     html+='<div class="meta">';
-    html+='<span>关注国家/区域：'+(r.country||'—')+'</span>';
-    html+='<span>报告类型：'+(r.reportType||'—')+'</span>';
-    html+='<span>编制人：'+(r.author||'—')+'</span>';
+    html+='<span>关注国家/区域：'+esc(r.country||'—')+'</span>';
+    html+='<span>报告类型：'+esc(r.reportType||'—')+'</span>';
+    html+='<span>编制人：'+esc(r.author||'—')+'</span>';
     html+='</div>';
 
     if(r.summary){
@@ -4842,7 +4858,7 @@ var INTELCENTER={
       html+='<div class="summary-box">';
       var sParas=r.summary.split(/\n+/);
       for(var si=0;si<sParas.length;si++){
-        if(sParas[si].trim())html+='<p>'+sParas[si].trim()+'</p>';
+        if(sParas[si].trim())html+='<p>'+esc(sParas[si].trim())+'</p>';
       }
       html+='</div>';
     }
@@ -4851,7 +4867,7 @@ var INTELCENTER={
       html+='<h2>分析素材来源</h2>';
       html+='<div class="summary-box">';
       r.materials.forEach(function(m){
-        html+='<p>['+m.source+'] '+m.title+(m.country?' | '+m.country:'')+(m.date?' | '+m.date:'')+'</p>';
+        html+='<p>['+esc(m.source)+'] '+esc(m.title)+(m.country?' | '+esc(m.country):'')+(m.date?' | '+esc(m.date):'')+'</p>';
       });
       html+='</div>';
     }
@@ -4863,7 +4879,7 @@ var INTELCENTER={
       for(var ei=0;ei<elKeys.length;ei++){
         var k=elKeys[ei];
         if(r.elements[k]){
-          html+='<tr><td class="label">'+elLabels[k]+'</td><td>'+r.elements[k].replace(/\n/g,'<br>')+'</td></tr>';
+          html+='<tr><td class="label">'+elLabels[k]+'</td><td>'+esc(r.elements[k]).replace(/\n/g,'<br>')+'</td></tr>';
         }
       }
       html+='</table>';
@@ -4877,9 +4893,9 @@ var INTELCENTER={
         var tp=tParas[ti].trim();
         if(tp){
           if(tp.indexOf('【')===0||tp.indexOf('[')===0){
-            html+='<p><b>'+tp+'</b></p>';
+            html+='<p><b>'+esc(tp)+'</b></p>';
           }else{
-            html+='<p>'+tp+'</p>';
+            html+='<p>'+esc(tp)+'</p>';
           }
         }
       }
@@ -4894,9 +4910,9 @@ var INTELCENTER={
         var ap=aParas[ai].trim();
         if(ap){
           if(ap.indexOf('【')===0||ap.indexOf('[')===0){
-            html+='<p><b>'+ap+'</b></p>';
+            html+='<p><b>'+esc(ap)+'</b></p>';
           }else{
-            html+='<p>'+ap+'</p>';
+            html+='<p>'+esc(ap)+'</p>';
           }
         }
       }
@@ -4906,7 +4922,7 @@ var INTELCENTER={
     html+='<div class="footer">本报告由海外利益保护情报预警平台自动生成 | '+now+'</div>';
     html+='</body></html>';
 
-    var blob=new Blob(['\ufeff'+html],{type:'application/msword'});
+    var blob=new Blob(['\ufeff'+html],{type:'application/msword;charset=utf-8'});
     var a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
     a.download=r.title+'.doc';
