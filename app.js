@@ -3968,7 +3968,6 @@ var INTELCENTER={
     if(this.tab==='gallery')this.renderGallery(el);
     else if(this.tab==='osint')this.renderOsint(el);
     else if(this.tab==='analysis')this.renderAnalysis(el);
-    else if(this.tab==='aireport')this.renderAiReport(el);
     else if(this.tab==='timeline')this.renderTimeline(el);
     else if(this.tab==='geoint')this.renderGeoint(el);
   },
