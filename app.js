@@ -4732,7 +4732,7 @@ var INTELCENTER={
     }
     this._aiReportSave();
     document.getElementById('modal').classList.remove('show');
-    this.renderAiReport(document.getElementById('intel-content'));
+    if(typeof AIREPORT!=='undefined')AIREPORT.render();
   },
   showAiReportDetail(id){
     var r=this._aiReports.find(function(x){return x.id===id;});
@@ -4793,7 +4793,7 @@ var INTELCENTER={
     showConfirm('\u786e\u5b9a\u5220\u9664\u8be5\u60c5\u62a5\u5206\u6790\u62a5\u544a\uff1f',function(){
       INTELCENTER._aiReports=INTELCENTER._aiReports.filter(function(r){return r.id!==id;});
       INTELCENTER._aiReportSave();
-      INTELCENTER.renderAiReport(document.getElementById('intel-content'));
+      if(typeof AIREPORT!=='undefined')AIREPORT.render();
       showToast('\u{1F5D1}\uFE0F \u5df2\u5220\u9664\u62a5\u544a');
     });
   },
