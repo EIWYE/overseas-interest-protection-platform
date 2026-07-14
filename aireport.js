@@ -278,7 +278,7 @@ var AIREPORT = {
 
     /* 报告列表 */
     html += '<div class="card mt-12"><div class="card-tt"><span class="ic">🤖</span>AI情报分析报告';
-    html += '<span style="font-size:10px;color:var(--text3);font-weight:400;margin-left:6px">— 现状分析(六要素) + 对华威胁 + 对策建议</span>';
+    html += '<span style="font-size:10px;color:var(--text3);font-weight:400;margin-left:6px">— 支持综合要素/战略/战术/风险评估四种分析模式</span>';
     html += '</div>';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
     html += '<span style="font-size:12px;color:var(--text3)">共 ' + reports.length + ' 份报告 | 管理员和注册用户均可使用</span>';
@@ -301,11 +301,18 @@ var AIREPORT = {
         var summary = (r.summary || '').substring(0, 120);
         if (r.summary && r.summary.length > 120) summary += '...';
 
+        var modeNames = {'elements':'综合要素','strategic':'战略类','tactical':'战术类','risk':'风险评估'};
+        var modeClr = r.reportMode === 'strategic' ? '#a855f7' :
+                      r.reportMode === 'tactical' ? 'var(--orange)' :
+                      r.reportMode === 'risk' ? 'var(--yellow)' : 'var(--cyan)';
+        var modeNm = modeNames[r.reportMode] || '综合要素';
+
         html += '<div style="padding:12px;background:var(--panel2);border-radius:8px;border-left:3px solid ' + lvClr + ';transition:.2s;cursor:pointer" onclick="INTELCENTER.showAiReportDetail(\'' + r.id + '\')">';
         html += '<div style="display:flex;justify-content:space-between;align-items:start">';
         html += '<div style="flex:1">';
         html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">';
         html += '<span style="font-size:10px;font-weight:700;color:' + lvClr + '">' + lvLabel + '</span>';
+        html += '<span style="font-size:9px;font-weight:600;color:' + modeClr + ';padding:1px 6px;background:' + modeClr + '15;border-radius:3px">' + modeNm + '</span>';
         html += '<span style="font-size:12px;font-weight:700">[' + r.id + '] ' + r.title + '</span>';
         html += '</div>';
         html += '<div style="font-size:11px;color:var(--text2);margin-bottom:4px">' + summary + '</div>';
