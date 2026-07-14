@@ -4819,110 +4819,66 @@ var INTELCENTER={
     var lvLabel=lvMap[r.threatLevel]||'未定';
     var elLabels={time:'时间',place:'地点',person:'人物',cause:'起因',process:'过程',result:'结果'};
     var now=new Date().toLocaleString('zh-CN',{hour12:false}).replace(/\//g,'-');
-    function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    function xe(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');}
+    function pTitle(t){return '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:line="560" w:line-rule="exact" w:after="200"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="方正小标宋简体" w:eastAsia="方正小标宋简体" w:hAnsi="方正小标宋简体"/><w:sz w:val="44"/><w:b/></w:rPr><w:t xml:space="preserve">'+xe(t)+'</w:t></w:r></w:p>';}
+    function pHeading(t){return '<w:p><w:pPr><w:spacing w:line="560" w:line-rule="exact" w:before="360" w:after="120"/><w:ind w:firstLineChars="200" w:firstLine="320"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="黑体" w:eastAsia="黑体" w:hAnsi="黑体"/><w:sz w:val="32"/><w:b/></w:rPr><w:t xml:space="preserve">'+xe(t)+'</w:t></w:r></w:p>';}
+    function pBody(t){return '<w:p><w:pPr><w:spacing w:line="560" w:line-rule="exact"/><w:ind w:firstLineChars="200" w:firstLine="320"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="仿宋" w:eastAsia="仿宋" w:hAnsi="仿宋"/><w:sz w:val="32"/></w:rPr><w:t xml:space="preserve">'+xe(t)+'</w:t></w:r></w:p>';}
+    function pMeta(t){return '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:line="560" w:line-rule="exact"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="仿宋" w:eastAsia="仿宋" w:hAnsi="仿宋"/><w:sz w:val="28"/></w:rPr><w:t xml:space="preserve">'+xe(t)+'</w:t></w:r></w:p>';}
+    function pFooter(t){return '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:line="560" w:line-rule="exact" w:before="480"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="仿宋" w:eastAsia="仿宋" w:hAnsi="仿宋"/><w:sz w:val="24"/><w:color w:val="666666"/></w:rPr><w:t xml:space="preserve">'+xe(t)+'</w:t></w:r></w:p>';}
+    function paras(text,fn){var parts=text.split(/\n\n+/);var out='';for(var i=0;i<parts.length;i++){var p=parts[i].trim();if(p)out+=fn(p);}return out;}
 
-    var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">';
-    html+='<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'+esc(r.title)+'</title>';
-    html+='<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]-->';
-    html+='<style>';
-    html+='@page{size:210mm 297mm;margin:37mm 26mm 35mm 28mm;}';
-    html+='body{font-family:"仿宋","FangSong","仿宋_GB2312","宋体","SimSun",serif;font-size:16pt;line-height:28pt;color:#000;text-align:justify;}';
-    html+='h1{font-family:"方正小标宋简体","黑体","SimHei",sans-serif;font-size:22pt;text-align:center;margin:0 0 6pt 0;font-weight:bold;line-height:28pt;}';
-    html+='h2{font-family:"黑体","SimHei",sans-serif;font-size:16pt;font-weight:bold;margin:18pt 0 6pt 0;text-indent:2em;line-height:28pt;}';
-    html+='p{text-indent:2em;margin:0 0 0 0;line-height:28pt;}';
-    html='.meta{text-align:center;font-size:14pt;color:#333;margin:0 0 18pt 0;text-indent:0;line-height:28pt;}';
-    html='.meta span{margin:0 12pt;}';
-    html='.summary-box{border:1px solid #999;padding:12pt;margin:12pt 0;background:#f5f5f5;}';
-    html='.summary-box p{text-indent:2em;line-height:28pt;}';
-    html='.element-table{width:100%;border-collapse:collapse;margin:12pt 0;font-size:14pt;}';
-    html='.element-table td{border:1px solid #999;padding:6pt 8pt;vertical-align:top;line-height:28pt;}';
-    html='.element-table .label{background:#e8e8e8;font-weight:bold;width:80pt;text-align:center;text-indent:0;}';
-    html='.threat-box p,.advice-box p{text-indent:2em;line-height:28pt;}';
-    html='.footer{margin-top:24pt;padding-top:8pt;border-top:1px solid #999;font-size:12pt;color:#666;text-align:center;text-indent:0;line-height:28pt;}';
-    html+='</style></head><body>';
+    var xml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+    xml+='<?mso-application progid="Word.Document"?>';
+    xml+='<w:wordDocument xmlns:w="http://schemas.microsoft.com/office/word/2003/wordml" xmlns:wx="http://schemas.microsoft.com/office/word/2003/auxHint" xmlns:o="urn:schemas-microsoft-com:office:office">';
+    xml+='<o:DocumentProperties><o:Title>'+xe(r.title)+'</o:Title><o:Author>'+xe(r.author||'')+'</o:Author></o:DocumentProperties>';
+    xml+='<w:body><wx:sect>';
 
-    html+='<h1>'+esc(r.title)+'</h1>';
-    html+='<div class="meta">';
-    html+='<span>报告编号：'+esc(r.id)+'</span>';
-    html+='<span>威胁等级：'+esc(lvLabel)+'</span>';
-    html+='<span>编制时间：'+esc(r.createTime||now)+'</span>';
-    html+='</div>';
-    html+='<div class="meta">';
-    html+='<span>关注国家/区域：'+esc(r.country||'—')+'</span>';
-    html+='<span>报告类型：'+esc(r.reportType||'—')+'</span>';
-    html+='<span>编制人：'+esc(r.author||'—')+'</span>';
-    html+='</div>';
+    xml+=pTitle(r.title);
+    xml+=pMeta('报告编号：'+r.id+'    威胁等级：'+lvLabel+'    编制时间：'+(r.createTime||now));
+    xml+=pMeta('关注国家/区域：'+(r.country||'—')+'    报告类型：'+(r.reportType||'—')+'    编制人：'+(r.author||'—'));
 
     if(r.summary){
-      html+='<h2>报告摘要</h2>';
-      html+='<div class="summary-box">';
-      var sParas=r.summary.split(/\n+/);
-      for(var si=0;si<sParas.length;si++){
-        if(sParas[si].trim())html+='<p>'+esc(sParas[si].trim())+'</p>';
-      }
-      html+='</div>';
+      xml+=pHeading('报告摘要');
+      xml+=paras(r.summary,pBody);
     }
-
     if(r.materials&&r.materials.length>0){
-      html+='<h2>分析素材来源</h2>';
-      html+='<div class="summary-box">';
+      xml+=pHeading('分析素材来源');
       r.materials.forEach(function(m){
-        html+='<p>['+esc(m.source)+'] '+esc(m.title)+(m.country?' | '+esc(m.country):'')+(m.date?' | '+esc(m.date):'')+'</p>';
+        xml+=pBody('['+m.source+'] '+m.title+(m.country?' | '+m.country:'')+(m.date?' | '+m.date:''));
       });
-      html+='</div>';
     }
-
     if(r.elements){
-      html+='<h2>现状分析（六要素）</h2>';
-      html+='<table class="element-table">';
+      xml+=pHeading('现状分析（六要素）');
+      xml+='<w:tbl><w:tblPr><w:tblW w:w="9600" w:type="dxa"/><w:tblBorders><w:top w:val="single" w:sz="4" w:color="999999"/><w:left w:val="single" w:sz="4" w:color="999999"/><w:bottom w:val="single" w:sz="4" w:color="999999"/><w:right w:val="single" w:sz="4" w:color="999999"/><w:insideH w:val="single" w:sz="4" w:color="999999"/><w:insideV w:val="single" w:sz="4" w:color="999999"/></w:tblBorders></w:tblPr>';
+      xml+='<w:tblGrid><w:gridCol w:w="1600"/><w:gridCol w:w="8000"/></w:tblGrid>';
       var elKeys=['time','place','person','cause','process','result'];
       for(var ei=0;ei<elKeys.length;ei++){
         var k=elKeys[ei];
         if(r.elements[k]){
-          html+='<tr><td class="label">'+elLabels[k]+'</td><td>'+esc(r.elements[k]).replace(/\n/g,'<br>')+'</td></tr>';
+          xml+='<w:tr><w:tc><w:tcPr><w:tcW w:w="1600" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="E8E8E8"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/><w:spacing w:line="560" w:line-rule="exact"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="黑体" w:eastAsia="黑体" w:hAnsi="黑体"/><w:sz w:val="28"/><w:b/></w:rPr><w:t>'+elLabels[k]+'</w:t></w:r></w:p></w:tc>';
+          var lines=String(r.elements[k]).split(/\n/);
+          xml+='<w:tc><w:tcPr><w:tcW w:w="8000" w:type="dxa"/></w:tcPr>';
+          for(var li=0;li<lines.length;li++){
+            xml+='<w:p><w:pPr><w:spacing w:line="560" w:line-rule="exact"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="仿宋" w:eastAsia="仿宋" w:hAnsi="仿宋"/><w:sz w:val="28"/></w:rPr><w:t xml:space="preserve">'+xe(lines[li])+'</w:t></w:r></w:p>';
+          }
+          xml+='</w:tc></w:tr>';
         }
       }
-      html+='</table>';
+      xml+='</w:tbl>';
     }
-
     if(r.threatAnalysis){
-      html+='<h2>对华威胁分析</h2>';
-      html+='<div class="threat-box">';
-      var tParas=r.threatAnalysis.split(/\n\n+/);
-      for(var ti=0;ti<tParas.length;ti++){
-        var tp=tParas[ti].trim();
-        if(tp){
-          if(tp.indexOf('【')===0||tp.indexOf('[')===0){
-            html+='<p><b>'+esc(tp)+'</b></p>';
-          }else{
-            html+='<p>'+esc(tp)+'</p>';
-          }
-        }
-      }
-      html+='</div>';
+      xml+=pHeading('对华威胁分析');
+      xml+=paras(r.threatAnalysis,pBody);
     }
-
     if(r.advice){
-      html+='<h2>对策建议</h2>';
-      html+='<div class="advice-box">';
-      var aParas=r.advice.split(/\n\n+/);
-      for(var ai=0;ai<aParas.length;ai++){
-        var ap=aParas[ai].trim();
-        if(ap){
-          if(ap.indexOf('【')===0||ap.indexOf('[')===0){
-            html+='<p><b>'+esc(ap)+'</b></p>';
-          }else{
-            html+='<p>'+esc(ap)+'</p>';
-          }
-        }
-      }
-      html+='</div>';
+      xml+=pHeading('对策建议');
+      xml+=paras(r.advice,pBody);
     }
+    xml+=pFooter('本报告由海外利益保护情报预警平台自动生成 | '+now);
+    xml+='<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="2098" w:right="1474" w:bottom="1985" w:left="1588" w:header="851" w:footer="992" w:gutter="0"/></w:sectPr>';
+    xml+='</wx:sect></w:body></w:wordDocument>';
 
-    html+='<div class="footer">本报告由海外利益保护情报预警平台自动生成 | '+now+'</div>';
-    html+='</body></html>';
-
-    var blob=new Blob(['\ufeff'+html],{type:'application/msword;charset=utf-8'});
+    var blob=new Blob([xml],{type:'application/msword'});
     var a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
     a.download=r.title+'.doc';
