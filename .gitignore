@@ -1,0 +1,8 @@
+*.bak
+index2234
+index3456712
+index345678
+index1
+__pycache__/
+node_modules/
+.DS_Store
