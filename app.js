@@ -4454,6 +4454,8 @@ var INTELCENTER={
     html+='<div><label class="text-xs text-muted" style="display:block;margin-bottom:4px">\u5a01\u80c1\u7b49\u7ea7</label><select class="select" id="aireport-level" style="font-size:12px;width:100%"><option value="critical"'+(r&&r.threatLevel==='critical'?' selected':'')+'>\u{1F534} \u7d27\u6025</option><option value="high"'+(r&&r.threatLevel==='high'?' selected':'')+'>\u{1F7E0} \u9ad8\u5371</option><option value="medium"'+(r&&r.threatLevel==='medium'?' selected':'')+'>\u{1F7E1} \u4e2d\u5371</option><option value="low"'+(r&&r.threatLevel==='low'?' selected':'')+'>\u{1F7E2} \u4f4e\u5371</option></select></div>';
     html+='<div><label class="text-xs text-muted" style="display:block;margin-bottom:4px">\u62a5\u544a\u7c7b\u578b</label><select class="select" id="aireport-type" style="font-size:12px;width:100%"><option value="\u4e8b\u4ef6\u5206\u6790"'+(r&&r.reportType==='\u4e8b\u4ef6\u5206\u6790'?' selected':'')+'>\u4e8b\u4ef6\u5206\u6790</option><option value="\u5f62\u52bf\u8bc4\u4f30"'+(r&&r.reportType==='\u5f62\u52bf\u8bc4\u4f30'?' selected':'')+'>\u5f62\u52bf\u8bc4\u4f30</option><option value="\u98ce\u9669\u9884\u8b66"'+(r&&r.reportType==='\u98ce\u9669\u9884\u8b66'?' selected':'')+'>\u98ce\u9669\u9884\u8b66</option><option value="\u5a01\u80c1\u8bc4\u4f30"'+(r&&r.reportType==='\u5a01\u80c1\u8bc4\u4f30'?' selected':'')+'>\u5a01\u80c1\u8bc4\u4f30</option><option value="\u7efc\u5408\u60c5\u62a5"'+(r&&r.reportType==='\u7efc\u5408\u60c5\u62a5'?' selected':'')+'>\u7efc\u5408\u60c5\u62a5</option></select></div>';
     html+='</div>';
+    // 分析模式选择
+    html+='<div style="margin-bottom:10px"><label class="text-xs text-muted" style="display:block;margin-bottom:4px">分析模式</label><select class="select" id="aireport-mode" style="font-size:12px;width:100%" onchange="INTELCENTER._onModeChange()"><option value="elements"'+(r&&r.reportMode==='strategic'||r&&r.reportMode==='tactical'||r&&r.reportMode==='risk'?'':' selected')+'>综合要素分析（六要素+威胁+建议）</option><option value="strategic"'+(r&&r.reportMode==='strategic'?' selected':'')+'>战略类情报分析</option><option value="tactical"'+(r&&r.reportMode==='tactical'?' selected':'')+'>战术类情报分析</option><option value="risk"'+(r&&r.reportMode==='risk'?' selected':'')+'>风险评估类情报分析</option></select></div>';
     // 素材选择器
     html+='<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:6px">\u{1F4CC} \u9009\u62e9\u5206\u6790\u7d20\u6750\uff08\u53ef\u4ece\u7cfb\u7edf\u5404\u6a21\u5757\u4e2d\u9009\u62e9\uff09</div>';
     html+='<div style="max-height:250px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;padding:8px;background:var(--bg)" id="aireport-materials-list">';
@@ -4473,7 +4475,7 @@ var INTELCENTER={
     html+='<div style="font-size:10px;color:var(--text3);margin-top:4px">\u5df2\u9009 <span id="aireport-sel-count" style="color:var(--cyan);font-weight:700">'+this._selectedMaterials.length+'</span> \u4e2a\u7d20\u6750</div>';
     html+='</div>';
     // 现状分析六要素
-    html+='<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:6px">\u{1F50D} \u73b0\u72b6\u5206\u6790\uff08\u516d\u8981\u7d20\uff09</div>';
+    html+='<div id="aireport-elements-section" style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:6px">\u{1F50D} \u73b0\u72b6\u5206\u6790\uff08\u516d\u8981\u7d20\uff09</div>';
     html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
     var elements=[
       {key:'time',lb:'\u65f6\u95f4',ph:'\u4e8b\u4ef6\u53d1\u751f\u65f6\u95f4',val:(r&&r.elements)?(r.elements.time||''):''},
@@ -4487,14 +4489,14 @@ var INTELCENTER={
       html+='<div><label class="text-xs text-muted" style="display:block;margin-bottom:2px">'+e.lb+'</label><input class="input" id="aireport-el-'+e.key+'" value="'+e.val.replace(/"/g,'&quot;')+'" placeholder="'+e.ph+'" style="font-size:11px;width:100%"></div>';
     });
     html+='</div>';
-    html+='<button class="btn sm" style="margin-top:6px;font-size:10px;padding:2px 10px" onclick="INTELCENTER._aiAutoFill()">\u{1F916} AI\u81ea\u52a8\u586b\u5145\u516d\u8981\u7d20</button>';
+    html+='<button class="btn sm" id="aireport-autofill-btn" style="margin-top:6px;font-size:10px;padding:2px 10px" onclick="INTELCENTER._aiAutoFill()">\u{1F916} AI\u81ea\u52a8\u586b\u5145\u516d\u8981\u7d20</button>';
     html+='</div>';
     // 对华威胁
-    html+='<div style="margin-bottom:10px"><label class="text-xs text-muted" style="display:block;margin-bottom:4px">\u{1F6A6} \u5bf9\u534e\u5a01\u80c1\u5206\u6790</label><textarea class="input" id="aireport-threat" rows="3" placeholder="\u5206\u6790\u8be5\u4e8b\u4ef6\u5bf9\u4e2d\u56fd\u6d77\u5916\u5229\u76ca\u3001\u4e2d\u8d44\u4f01\u4e1a\u3001\u4e00\u5e26\u4e00\u8def\u9879\u76ee\u7684\u5a01\u80c1..." style="font-size:12px;width:100%;resize:vertical">'+(r?r.threatAnalysis||'':'')+'</textarea></div>';
+    html+='<div style="margin-bottom:10px"><label class="text-xs text-muted" style="display:block;margin-bottom:4px" id="aireport-threat-label">\u{1F6A6} \u5bf9\u534e\u5a01\u80c1\u5206\u6790</label><textarea class="input" id="aireport-threat" rows="3" placeholder="\u5206\u6790\u8be5\u4e8b\u4ef6\u5bf9\u4e2d\u56fd\u6d77\u5916\u5229\u76ca\u3001\u4e2d\u8d44\u4f01\u4e1a\u3001\u4e00\u5e26\u4e00\u8def\u9879\u76ee\u7684\u5a01\u80c1..." style="font-size:12px;width:100%;resize:vertical">'+(r?r.threatAnalysis||'':'')+'</textarea></div>';
     // 对策建议
-    html+='<div style="margin-bottom:10px"><label class="text-xs text-muted" style="display:block;margin-bottom:4px">\u{1F4A1} \u5bf9\u7b56\u5efa\u8bae</label><textarea class="input" id="aireport-advice" rows="3" placeholder="\u63d0\u51fa\u5e94\u5bf9\u63aa\u65bd\u548c\u5efa\u8bae..." style="font-size:12px;width:100%;resize:vertical">'+(r?r.advice||'':'')+'</textarea></div>';
+    html+='<div style="margin-bottom:10px"><label class="text-xs text-muted" style="display:block;margin-bottom:4px" id="aireport-advice-label">\u{1F4A1} \u5bf9\u7b56\u5efa\u8bae</label><textarea class="input" id="aireport-advice" rows="3" placeholder="\u63d0\u51fa\u5e94\u5bf9\u63aa\u65bd\u548c\u5efa\u8bae..." style="font-size:12px;width:100%;resize:vertical">'+(r?r.advice||'':'')+'</textarea></div>';
     // 摘要
-    html+='<div style="margin-bottom:10px"><label class="text-xs text-muted" style="display:block;margin-bottom:4px">\u{1F4DD} \u62a5\u544a\u6458\u8981</label><textarea class="input" id="aireport-summary" rows="2" placeholder="\u7b80\u8981\u6982\u8ff0\u62a5\u544a\u5185\u5bb9..." style="font-size:12px;width:100%;resize:vertical">'+(r?r.summary||'':'')+'</textarea></div>';
+    html+='<div style="margin-bottom:10px"><label class="text-xs text-muted" style="display:block;margin-bottom:4px" id="aireport-summary-label">\u{1F4DD} \u62a5\u544a\u6458\u8981</label><textarea class="input" id="aireport-summary" rows="2" placeholder="\u7b80\u8981\u6982\u8ff0\u62a5\u544a\u5185\u5bb9..." style="font-size:12px;width:100%;resize:vertical">'+(r?r.summary||'':'')+'</textarea></div>';
     html+='<div style="display:flex;gap:8px">'+
       '<button class="btn primary sm" onclick="INTELCENTER.saveAiReport('+(r?'\''+r.id+'\'':'null')+')">\u2705 \u4fdd\u5b58\u62a5\u544a</button>'+
       '<button class="btn sm" onclick="INTELCENTER._aiGenerate()">\u{1F916} AI\u4e00\u952e\u751f\u6210</button>'+
@@ -4505,6 +4507,8 @@ var INTELCENTER={
     document.getElementById('modal').classList.add('show');
     // 存储完整素材列表供后续使用
     this._allMaterials=materials;
+    // 根据已保存的模式初始化UI（编辑时预选模式）
+    this._onModeChange();
   },
   _toggleMaterial(id){
     var idx=this._selectedMaterials.findIndex(function(s){return s.id===id;});
@@ -4523,6 +4527,22 @@ var INTELCENTER={
         if(mid){var idMatch=mid.match(/'([^']+)'/);if(idMatch){var mid2=idMatch[1];var isSel=INTELCENTER._selectedMaterials.some(function(s){return s.id===mid2;});cb.checked=isSel;div.style.background=isSel?'rgba(0,212,255,0.08)':'transparent';}}}
       );
     }
+  },
+  _onModeChange(){
+    var mode=document.getElementById('aireport-mode').value;
+    var elSec=document.getElementById('aireport-elements-section');
+    if(elSec)elSec.style.display=(mode==='elements')?'block':'none';
+    var L={
+      elements:{t:'🚧 对华威胁分析',a:'💡 对策建议',s:'📝 报告摘要',auto:'🤖 AI自动填充六要素'},
+      strategic:{t:'🎯 战略影响评估',a:'📋 战略应对建议',s:'📝 战略摘要',auto:''},
+      tactical:{t:'⚔️ 威胁评估与暴露面分析',a:'🛡️ 战术处置建议',s:'📝 事态摘要',auto:''},
+      risk:{t:'📊 风险等级判定与传导分析',a:'🛡️ 风险防控建议',s:'📝 风险摘要',auto:''}
+    };
+    var l=L[mode]||L.elements;
+    var tl=document.getElementById('aireport-threat-label');if(tl)tl.textContent=l.t;
+    var al=document.getElementById('aireport-advice-label');if(al)al.textContent=l.a;
+    var sl=document.getElementById('aireport-summary-label');if(sl)sl.textContent=l.s;
+    var ab=document.getElementById('aireport-autofill-btn');if(ab)ab.style.display=l.auto?'inline-block':'none';
   },
   // AI自动填充六要素 (基于选中素材)
   _aiAutoFill(){
@@ -4549,9 +4569,190 @@ var INTELCENTER={
     setVal('aireport-el-result',results.join('；'));
     showToast('\u{1F916} AI\u5df2\u6839\u636e\u9009\u4e2d\u7d20\u6750\u81ea\u52a8\u586b\u5145\u516d\u8981\u7d20');
   },
-  // AI一键生成 - 公文风格情报分析报告（3000-3500字）
+  // AI一键生成 - 根据分析模式分发
   _aiGenerate(){
     if(this._selectedMaterials.length===0){showToast('请先选择至少1个素材');return;}
+    var modeEl=document.getElementById('aireport-mode');
+    var mode=modeEl?modeEl.value:'elements';
+    if(mode==='strategic')this._aiGenStrategic();
+    else if(mode==='tactical')this._aiGenTactical();
+    else if(mode==='risk')this._aiGenRisk();
+    else this._aiGenElements();
+  },
+  // ===== 战略类情报分析 =====
+  _aiGenStrategic(){
+    function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+    var countries=[...new Set(this._selectedMaterials.map(function(m){return m.country;}).filter(Boolean))];
+    var countryStr=countries.length>0?countries.join('、'):'涉事区域';
+    var mats=this._selectedMaterials;
+    var cName=countries[0]||'';
+    var cObj=cName?COUNTRIES.find(function(c){return c.name===cName;}):null;
+    var cRisk=cObj?getDynamicRisk(cName):0;
+    var cRegion=cObj?cObj.region:'';
+    var ents=ENTERPRISES.filter(function(e){return countries.some(function(c){return e.countries.indexOf(c)>=0;});});
+    var entStr=ents.length>0?ents.map(function(e){return e.short;}).slice(0,5).join('、'):'涉事企业';
+    var riskDesc=cRisk>=8?'极高风险':cRisk>=6?'高风险':cRisk>=4?'中等风险':'低风险';
+
+    var summaryEl=document.getElementById('aireport-summary');
+    if(summaryEl&&!summaryEl.value){summaryEl.value=pick([
+      '经战略层面综合研判，'+countryStr+'安全形势正处于深刻演变期，多重战略力量博弈加剧，地缘政治格局面临重构。当前事态对我海外利益的战略影响已超出单一事件范畴，涉及大国竞争、能源安全、供应链重塑等深层议题。'+entStr+'等中资企业在当地的战略布局面临深度调整压力。本报告基于'+mats.length+'个情报素材，从战略背景、地缘演变、对华影响、趋势预判四个维度展开分析，提出战略级应对建议。',
+      '当前'+countryStr+'安全态势处于战略转折节点，多重矛盾集中爆发、大国博弈持续深化。经战略评估，该区域事态对我海外利益构成中长期结构性影响，须从战略高度统筹应对。区域动态风险评分达'+cRisk.toFixed(1)+'分，属'+riskDesc+'区间。'+entStr+'等中资企业的项目布局、人员安全、资产安全均面临战略层面考验。本报告基于'+mats.length+'个情报素材，形成战略级研判与建议。'
+    ]);}
+
+    var tParts=[];
+    tParts.push(pick([
+      '第一，战略背景研判。经情报融合分析，'+countryStr+'当前安全态势恶化并非孤立事件，而是多重战略矛盾集中爆发的结果。一是大国博弈持续加剧，相关国家在该区域的军事部署、经济制裁、外交施压等动作频繁，战略竞争态势日趋尖锐。二是地区安全架构失衡，传统安全机制弱化、新兴威胁管控缺位，形成了安全真空。三是内部政治生态脆弱，政治转型期的治理能力不足加剧了社会动荡。'+entStr+'等中资企业在当地的战略布局面临深度调整压力，须从战略高度重新评估区域定位与投入规模。',
+      '第一，战略背景研判。经多源情报综合分析，'+countryStr+'安全形势恶化具有深层结构性原因。一是地缘战略价值凸显引发大国争夺，相关国家在该区域的军事存在和政治影响力持续加大。二是历史积怨与现实利益冲突交织，形成了难以化解的结构性矛盾。三是区域治理机制失效，多边安全合作框架形同虚设。研判认为，当前事态具有长期性和复杂性特征，短期内难以根本缓解。'+entStr+'等中资企业须做好应对长期复杂局面的战略准备。'
+    ]));
+    tParts.push(pick([
+      '第二，地缘政治演变分析。从地缘战略视角审视，该区域正经历冷战后最深刻的格局重塑。一是地缘力量对比发生显著变化，新兴力量崛起与传统大国守成之间的张力持续加大。二是同盟体系加速重组，多边安全合作机制呈现碎片化特征。三是能源格局与物流通道面临重构，对我国能源进口和贸易运输的战略意义不言而喻。研判认为，该区域地缘政治演变将进入长周期震荡阶段，短期内难以形成稳定均衡。'+(cRegion?cRegion+'区域整体风险水平处于高位运行区间，对中资企业涉外业务构成持续压力。':'对中资企业涉外业务构成持续压力。'),
+      '第二，地缘政治演变分析。从地缘格局演变规律来看，'+countryStr+'所处区域正经历结构性调整。一是大国战略重心转移，该区域成为全球地缘竞争焦点。二是区域安全公共产品供给不足，多边安全合作机制覆盖面有限。三是非传统安全威胁上升，网络安全、恐怖主义、跨国犯罪等议题与传统地缘竞争相互叠加。从战略层面研判，该区域地缘格局演变将深刻影响我国周边安全环境，须前瞻布局、系统应对。'
+    ]));
+    tParts.push(pick([
+      '第三，对华战略影响评估。经综合评估，当前事态对我海外利益构成多层次战略影响。一是"一带一路"倡议推进受阻，关键节点国家的安全环境恶化直接影响项目落地与运营。二是能源安全面临结构性风险，运输通道安全的不确定性上升，能源进口多元化战略亟需加快。三是中资企业海外资产暴露面扩大，在动荡环境中的防护能力面临考验。四是大国竞争可能向经济领域溢出，我企业面临被"精准脱钩"的风险。需要指出的是，上述影响具有传导性和叠加性，不宜孤立评估单一维度。',
+      '第三，对华战略影响评估。经多维度评估，当前事态对我国海外利益的影响已超出安全范畴，向经济、政治、外交等领域延伸。一是战略通道安全面临挑战，'+countryStr+'的安全态势直接影响我国贸易运输线。二是中资企业投资安全面临考验，'+entStr+'等企业在当地的项目可能因安全形势恶化而遭受损失。三是国际舆论环境恶化，部分势力借机炒作涉华议题，对中资企业声誉构成间接威胁。四是区域合作机制受冲击，多边经济合作项目的推进面临更大不确定性。'
+    ]));
+    tParts.push(pick([
+      '第四，中长期趋势预判。基于当前态势与历史经验研判，该区域安全形势中长期将呈现以下趋势：一是大国战略博弈将持续深化，竞争领域从军事安全向科技、经济、规则制定等维度扩展。二是地区国家"选边站队"压力加大，中立空间被持续压缩。三是安全风险与经济风险加速融合，形成复合型风险格局。四是区域安全秩序面临重构，新的安全架构尚在孕育之中。建议从战略高度统筹应对，建立长效风险评估与预警机制，确保对区域格局变化的持续跟踪与前瞻研判。',
+      '第四，中长期趋势预判。基于情报分析与趋势建模，研判认为'+countryStr+'安全形势将呈现以下中长期趋势：一是安全风险短期内难以缓解，威胁因素将持续存在并可能进一步升级。二是地缘竞争格局趋于固化，大国在该区域的战略博弈将进入持久态势。三是经济安全化趋势加强，安全因素对经济合作的制约日益突出。四是多边合作机制面临重塑，区域安全治理架构将经历深刻调整。各企业须充分评估中长期风险，制定差异化战略，避免短期行为损害长期利益。'
+    ]));
+
+    var threatEl=document.getElementById('aireport-threat');
+    if(threatEl)threatEl.value=tParts.join('\n\n');
+
+    var aParts=[];
+    aParts.push(pick([
+      '一是强化战略统筹与顶层设计。建议从国家战略层面统筹海外利益保护工作，将'+countryStr+'纳入重点风险评估区域，建立跨部门协调机制，形成战略合力。二是优化海外布局与风险对冲。对高风险区域，压缩新增投入、加强项目安全评估；对中低风险区域，维持业务并加强安保投入。三是深化多边外交合作。充分利用上海合作组织、金砖国家等平台，推动建立区域安全合作框架。四是建立长效安全机制。将安全评估纳入项目决策流程，加强中资企业之间的安全协同。',
+      '一是加强战略研判与前瞻布局。建议建立'+countryStr+'安全形势战略跟踪机制，定期形成战略研判报告，前瞻布局应对措施。二是优化海外资产配置。对高风险区域的项目，重新评估投资回报与安全风险的平衡；对规划中的新项目，将安全成本纳入可行性研究。三是强化多边外交运筹。通过双边和多边渠道，推动涉事国家加强对中方人员和资产的保护力度。四是推动区域安全合作。积极参与区域安全对话，推动建立务实管用的安全合作机制。'
+    ]));
+    aParts.push(pick([
+      '五是加强企业战略安全能力建设。'+entStr+'等中资企业须从战略高度认识海外安全工作，建立专职安全管理部门，配备专业安全人员，将安全投入纳入企业战略预算。六是建立战略级应急响应机制。明确战略级安全事件的响应指挥体系、决策流程和资源调配方案，确保紧急情况下的快速决策和有效行动。七是加强人才队伍建设。培养既懂业务又懂安全的复合型人才，提升企业整体安全素养和风险意识。八是推动安全标准体系建设。建立海外项目安全认证制度，推动行业安全标准落地执行。',
+      '五是完善企业海外安全治理体系。'+entStr+'等企业须将安全管理纳入公司治理框架，建立董事会层面的安全监督机制。六是加强战略情报支撑。充分利用系统平台的多源情报融合能力，为企业战略决策提供情报支撑。七是推动企业间安全协同。建立中资企业安全信息共享机制，形成海外安全保护合力。八是加强国际合作。与东道国政府、国际组织、当地社区建立多层次合作关系，为企业运营营造有利外部环境。'
+    ]));
+
+    var adviceEl=document.getElementById('aireport-advice');
+    if(adviceEl)adviceEl.value=aParts.join('\n\n');
+
+    var titleEl=document.getElementById('aireport-title');
+    if(titleEl&&!titleEl.value){titleEl.value=countryStr+'安全形势战略研判报告';}
+    showToast('AI已生成战略类情报分析报告');
+  },
+  // ===== 战术类情报分析 =====
+  _aiGenTactical(){
+    function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+    var countries=[...new Set(this._selectedMaterials.map(function(m){return m.country;}).filter(Boolean))];
+    var countryStr=countries.length>0?countries.join('、'):'涉事区域';
+    var mats=this._selectedMaterials;
+    var hasThreat=mats.some(function(m){return m.source==='威胁组织';});
+    var cName=countries[0]||'';
+    var cObj=cName?COUNTRIES.find(function(c){return c.name===cName;}):null;
+    var cRisk=cObj?getDynamicRisk(cName):0;
+    var ents=ENTERPRISES.filter(function(e){return countries.some(function(c){return e.countries.indexOf(c)>=0;});});
+    var entStr=ents.length>0?ents.map(function(e){return e.short;}).slice(0,5).join('、'):'涉事企业';
+
+    var summaryEl=document.getElementById('aireport-summary');
+    if(summaryEl&&!summaryEl.value){summaryEl.value=pick([
+      '经战术层面研判，'+countryStr+'安全事态呈现快速演变特征，威胁信号清晰、攻击意图明确。当前威胁已具备向中资项目、人员溢散的战术可能，须立即启动战术级响应。'+entStr+'等中资企业的项目营地、通勤车队均在潜在打击范围内。本报告基于'+mats.length+'个情报素材，从事态研判、威胁识别、暴露面分析、即时影响评估四个维度展开分析，提出战术级处置建议。',
+      '当前'+countryStr+'安全事态处于活跃演变阶段，威胁源活动频率上升、袭击能力增强。经战术评估，中资企业面临实质性安全威胁，须采取果断措施前置布防。区域动态风险评分达'+cRisk.toFixed(1)+'分。本报告基于'+mats.length+'个情报素材，形成战术级研判与处置建议。'
+    ]);}
+
+    var tParts=[];
+    tParts.push(pick([
+      '第一，事态发展研判。经多源情报交叉验证，'+countryStr+'当前安全事态处于活跃演变阶段。一是威胁源活动频率显著上升，袭击意图明确、行动能力充分。二是事态发展速度超出预期，从预警到实施袭击的周期缩短。三是威胁目标呈现泛化趋势，从军警目标向民用设施、外资企业扩散。'+entStr+'等中资企业的项目营地、通勤车队、办公场所均在潜在打击范围内。研判认为，当前威胁等级处于高位运行区间，短期内难以缓解，须采取果断措施前置布防。',
+      '第一，事态发展研判。经情报分析确认，'+countryStr+'安全事态正在快速演变。一是安全事件频率明显上升，多起事件指向同一威胁源。二是威胁信号的关联性增强，不同信源指向同一区域、同一时间段。三是事态走向存在多种可能性，但对中资企业的影响已初步显现。从战术层面研判，当前威胁具备向涉外中资项目、人员溢散之演变可能，须严密监控、前置布防。'
+    ]));
+    tParts.push(pick([
+      '第二，威胁源识别与能力评估。经情报分析确认，当前主要威胁源具备以下能力特征：一是情报搜集能力较强，能够掌握目标出行规律和通勤路线。二是武器装备水平提升，具备发动自杀式袭击、无人机攻击等新型作战能力。三是组织协同能力充分，能够实施多点同时袭击。'+(hasThreat?'相关威胁组织正在调整战术模式，从传统路边炸弹向新型攻击手段升级，袭击目标选择上呈现从军警目标向民用设施扩散的趋势。':'研判认为，当前威胁源的战术模式呈现出预谋性强、隐蔽性高、破坏力大的特点。'),
+      '第二，威胁源识别与能力评估。经多源情报确认，当前威胁源具备较强的行动能力。一是情报搜集能力充分，能够针对中资企业的出行规律、通勤路线实施精确侦察。二是袭击方式多样化，具备路边炸弹、自杀式袭击、无人机攻击等多种作战手段。三是组织化程度高，具备多点协同袭击的能力。'+entStr+'等中资企业须提升安保等级、加强物理防护。'
+    ]));
+    tParts.push(pick([
+      '第三，暴露面与薄弱环节分析。从战术维度审视，中资企业在当地的暴露面主要集中在以下环节：一是人员通勤安全，固定路线和时间容易被掌握，形成安全漏洞。二是项目营地防护，物理防护标准参差不齐，部分设施防护能力不足。三是供应链物流，交通线路和物资仓储环节安全风险上升。四是信息通信安全，网络攻击可能导致指挥通信中断。'+entStr+'等企业须全面排查上述薄弱环节，制定专项整改方案，压实安全防护责任。',
+      '第三，暴露面与薄弱环节分析。经战术评估，'+entStr+'等中资企业的主要暴露面如下：一是人员暴露面，中方员工通勤路线固定、活动规律可预测。二是设施暴露面，项目营地多位于偏远地区，安保力量覆盖不足。三是物流暴露面，供应链节点安全防护薄弱。四是信息暴露面，企业内部网络存在被攻击风险。建议各企业快速排查上述暴露面，制定差异化防护方案，压缩高风险区域活动空间。'
+    ]));
+    tParts.push(pick([
+      '第四，即时影响评估。基于当前事态研判，短期内可能产生以下影响：一是人员安全风险骤升，中方员工面临直接人身威胁。二是项目运营受阻，安全形势恶化可能导致停工、延期。三是供应链中断，物流受阻影响物资保障。四是声誉风险上升，虚假信息可能引发公众对中资企业的敌意。从战术层面判断，上述影响具有突发性和连锁性，须制定即时应对措施，确保人员安全为第一优先。',
+      '第四，即时影响评估。经战术评估，当前事态对中资企业的即时影响主要体现在以下方面：一是人员安全受到直接威胁，通勤和外出风险骤升。二是项目运营面临中断风险，安全形势恶化可能导致停工。三是物流供应链受阻，物资运输和仓储安全风险上升。四是通信安全面临挑战，网络攻击可能导致指挥通信中断。研判认为，短期内上述影响将持续存在，须采取即时应对措施。'
+    ]));
+
+    var threatEl=document.getElementById('aireport-threat');
+    if(threatEl)threatEl.value=tParts.join('\n\n');
+
+    var aParts=[];
+    aParts.push(pick([
+      '一是立即启动高级别安保措施。提升警戒等级、加强物理防护、增派安保力量、压缩人员活动半径。二是强化人员安全管控。实施非必要不外出政策，确需外出的必须配备武装护卫，限制非必要外出是当前最紧迫的任务。三是加强情报监测与预警。建立专项监测小组，密切跟踪威胁组织动向和行动模式变化。四是启动应急通信与撤离预案。确保紧急情况下通信畅通、撤离路线可用。',
+      '一是立即提升安保等级。'+entStr+'等企业须立即将安保等级提升至最高级别，加强项目营地物理防护、增派安保力量。二是严格人员管控。实施非必要不外出政策，确需外出的必须配备武装护卫，变更通勤路线和时间。三是加强情报跟踪。建立24小时情报监测机制，密切跟踪威胁源动向。四是启动应急准备。检查应急通信设备、确认撤离路线、储备应急物资，确保紧急情况下快速响应。'
+    ]));
+    aParts.push(pick([
+      '五是加强关键设施专项防护。对项目营地、数据中心、物资仓库等重点设施，制定专项保护方案，增加防护力量部署。六是建立联防联动机制。与当地安全力量、使馆、其他中资企业建立信息共享和协同响应机制。七是做好应急物资储备。确保食品、饮用水、医疗用品、燃料等应急物资储备充足。八是定期组织应急演练。检验预案可行性和有效性，及时修订完善。',
+      '五是强化通勤安全保障。变更中方员工通勤路线和时间，配备装甲车辆和武装护卫。六是加强信息通信安全。提升网络安全等级，确保指挥通信系统安全可靠。七是建立多方协调机制。与使馆、当地安全力量、中资企业建立信息共享和协同响应平台。八是做好人员心理疏导。确保人员情绪稳定，避免因恐慌导致的不理智行为。'
+    ]));
+
+    var adviceEl=document.getElementById('aireport-advice');
+    if(adviceEl)adviceEl.value=aParts.join('\n\n');
+
+    var titleEl=document.getElementById('aireport-title');
+    if(titleEl&&!titleEl.value){titleEl.value=countryStr+'安全事态战术研判报告';}
+    showToast('AI已生成战术类情报分析报告');
+  },
+  // ===== 风险评估类情报分析 =====
+  _aiGenRisk(){
+    function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+    var countries=[...new Set(this._selectedMaterials.map(function(m){return m.country;}).filter(Boolean))];
+    var countryStr=countries.length>0?countries.join('、'):'涉事区域';
+    var mats=this._selectedMaterials;
+    var cName=countries[0]||'';
+    var cObj=cName?COUNTRIES.find(function(c){return c.name===cName;}):null;
+    var cRisk=cObj?getDynamicRisk(cName):0;
+    var ents=ENTERPRISES.filter(function(e){return countries.some(function(c){return e.countries.indexOf(c)>=0;});});
+    var entStr=ents.length>0?ents.map(function(e){return e.short;}).slice(0,5).join('、'):'涉事企业';
+    var riskLevel=cRisk>=8?'极高风险':cRisk>=6?'高风险':cRisk>=4?'中等风险':'低风险';
+
+    var summaryEl=document.getElementById('aireport-summary');
+    if(summaryEl&&!summaryEl.value){summaryEl.value=pick([
+      '经风险评估模型综合测算，'+countryStr+'当前整体风险水平处于'+riskLevel+'区间，动态风险评分达'+cRisk.toFixed(1)+'分（满分10分）。多重风险因素交织叠加、传导路径复杂，对我海外利益构成系统性威胁。本报告基于'+mats.length+'个情报素材，从风险识别、概率评估、传导分析、等级判定四个维度展开分析，提出风险防控建议。',
+      '经全维度风险评估，'+countryStr+'当前整体风险等级为'+riskLevel+'，动态风险评分'+cRisk.toFixed(1)+'分。风险因素多元叠加、传导路径复杂，'+entStr+'等中资企业面临系统性风险暴露。本报告基于'+mats.length+'个情报素材，形成风险评估与防控建议。'
+    ]);}
+
+    var tParts=[];
+    tParts.push(pick([
+      '第一，风险识别与分类。经全维度风险扫描，当前'+countryStr+'主要风险源可归纳为以下类别：一是政治安全风险，包括政治动荡、政权更迭、政策突变等。二是社会安全风险，包括武装冲突、恐怖袭击、社会动乱等。三是经济金融风险，包括汇率波动、制裁措施、金融断供等。四是法律合规风险，包括法规变动、投资审查、出口管制等。五是自然灾害风险，包括地震、疫情、极端天气等。上述风险并非孤立存在，相互之间存在传导和放大效应，须系统评估、统筹应对。',
+      '第一，风险识别与分类。经多源情报融合分析，'+countryStr+'当前面临的主要风险类型如下：一是政治风险，政府治理能力不足、政策连续性差。二是安全风险，武装冲突和社会动乱威胁人员资产安全。三是经济风险，宏观经济不稳定、金融体系脆弱。四是法律风险，法规环境不透明、合规要求多变。五是操作风险，基础设施落后、供应链不稳定。从风险关联性来看，各类风险之间存在显著的传导和放大效应，单一风险事件可能引发连锁反应。'
+    ]));
+    tParts.push(pick([
+      '第二，风险概率与强度评估。基于历史数据和情报分析，各风险类别的概率与强度评估如下：一是政治安全风险，发生概率高、影响强度大，属优先关注类别。二是社会安全风险，发生概率高、影响强度极大，直接威胁人员安全。三是经济金融风险，发生概率中、影响强度大，影响业务连续性。四是法律合规风险，发生概率中、影响强度中，增加运营成本。五是自然灾害风险，发生概率低、影响强度大，需做好应急准备。综合评估，当前风险概率与强度的乘积效应显著，整体风险水平处于'+riskLevel+'区间。',
+      '第二，风险概率与强度评估。经风险建模分析，各类风险的概率和强度如下：一是安全风险概率最高、强度最大，'+entStr+'等企业的人员和设施直接暴露在威胁之下。二是政治风险概率高、强度大，政策突变可能影响项目合法性。三是经济风险概率中等、强度较大，汇率波动和金融制裁影响资金安全。四是法律风险概率中等、强度中等，合规成本上升。五是操作风险概率较高、强度中等，供应链中断影响运营效率。综合判定，当前整体风险处于'+riskLevel+'水平。'
+    ]));
+    tParts.push(pick([
+      '第三，影响范围与传导路径分析。经风险传导建模分析，当前风险的影响范围和传导路径呈现以下特征：一是直接冲击主要集中在人员安全和设施安全维度，具有突发性和不可逆性。二是间接影响通过供应链中断、舆论环境恶化、保险费率上升等渠道传导，具有滞后性和累积性。三是系统性风险可能通过金融网络和贸易网络向区域外扩散，影响范围超出单一国家。需要指出的是，风险传导具有非线性特征，小事件可能引发大后果，须建立动态风险监测机制。',
+      '第三，影响范围与传导路径分析。从风险传导视角审视，当前风险的影响范围呈现以下特征：一是直接影响覆盖人员安全、资产安全、业务连续性三个维度。二是间接影响通过供应链、金融链、舆论链三条路径传导。三是系统性影响可能波及区域安全格局，影响中国与东道国的双边关系。'+entStr+'等企业须全面评估风险传导路径，建立风险传导监测机制，对关键节点进行重点防控。'
+    ]));
+    tParts.push(pick([
+      '第四，风险等级判定。综合概率、强度、影响范围、传导路径四维评估，判定当前'+countryStr+'整体风险等级为'+riskLevel+'。一是人员安全风险等级为'+(cRisk>=7?'极高':'高')+'，建议立即启动高级别防护。二是资产安全风险等级为高，建议加强物理防护和保险覆盖。三是业务连续性风险等级为'+(cRisk>=6?'高':'中')+'，建议制定业务连续性预案。四是合规风险等级为中，建议加强法律监测和合规审查。综合判定，当前风险水平要求采取'+(cRisk>=7?'紧急':'积极')+'应对措施。',
+      '第四，风险等级判定。基于四维评估模型，'+countryStr+'各维度风险等级如下：一是人员安全风险'+(cRisk>=7?'极高':'高')+'，'+entStr+'等企业人员面临直接安全威胁。二是资产安全风险高，项目设施和设备面临损毁风险。三是业务连续性风险'+(cRisk>=6?'高':'中')+'，安全形势恶化可能导致业务中断。四是声誉风险中等，虚假信息可能影响企业形象。综合判定整体风险等级为'+riskLevel+'，建议采取差异化防控措施。'
+    ]));
+
+    var threatEl=document.getElementById('aireport-threat');
+    if(threatEl)threatEl.value=tParts.join('\n\n');
+
+    var aParts=[];
+    aParts.push(pick([
+      '一是建立风险分级管控机制。按照风险等级实施差异化管控，对极高风险立即响应、对高风险加强监控、对中风险保持警惕。二是完善风险监测预警体系。利用大数据和人工智能技术，建立实时风险监测平台，实现风险早发现、早预警。三是制定风险缓释方案。包括保险覆盖、资产分散、合同保护条款等市场化风险转移措施。四是建立风险应急响应机制。明确各级风险响应的指挥体系、流程和资源调配方案。',
+      '一是实施风险分级管控。'+entStr+'等企业须按照极高风险立即响应、高风险加强监控、中风险保持警惕的原则实施差异化管控。二是建立动态风险评估机制。定期更新风险评估报告，动态调整风险等级和防控措施。三是完善保险覆盖。对人员安全、资产安全、业务中断等风险点，购买充分的保险覆盖。四是制定业务连续性预案。确保在风险事件发生时，关键业务能够快速恢复或替代。'
+    ]));
+    aParts.push(pick([
+      '五是加强供应链风险管控。排查供应链关键节点，评估单点故障风险，建立多元化供应体系。六是强化人员安全风险防控。对高风险区域人员实施非必要不外出，配备安保力量，制定撤离预案。七是建立合规风险监测机制。跟踪东道国法律法规变化，确保业务合规运营。八是定期开展风险压力测试。模拟极端风险场景，检验防控措施的有效性和企业承受能力。',
+      '五是加强资产安全防护。对关键设施和核心资产制定专项保护方案，增加防护力量部署。六是建立风险信息共享机制。与使馆、行业协会、其他中资企业建立风险信息共享平台。七是推动风险转移措施。通过保险、担保、合同条款等方式，将部分风险转移给第三方。八是建立风险后评估机制。对已发生的风险事件进行复盘评估，持续优化风险管理流程。'
+    ]));
+
+    var adviceEl=document.getElementById('aireport-advice');
+    if(adviceEl)adviceEl.value=aParts.join('\n\n');
+
+    var titleEl=document.getElementById('aireport-title');
+    if(titleEl&&!titleEl.value){titleEl.value=countryStr+'风险评估分析报告';}
+    showToast('AI已生成风险评估类情报分析报告');
+  },
+  // ===== 综合要素分析（六要素模式）=====
+  _aiGenElements(){
     this._aiAutoFill();
     function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
     var countries=[...new Set(this._selectedMaterials.map(function(m){return m.country;}).filter(Boolean))];
@@ -4710,7 +4911,7 @@ var INTELCENTER={
     if(titleEl&&!titleEl.value){
       titleEl.value=countryStr+'安全形势分析研判与对策建议';
     }
-    showToast('AI已自动生成公文风格分析报告');
+    showToast('AI已生成综合要素分析报告');
   },
 
   saveAiReport(id){
@@ -4718,6 +4919,8 @@ var INTELCENTER={
     var country=document.getElementById('aireport-country').value.trim();
     var level=document.getElementById('aireport-level').value;
     var reportType=document.getElementById('aireport-type').value;
+    var modeEl=document.getElementById('aireport-mode');
+    var reportMode=modeEl?modeEl.value:'elements';
     var threatAnalysis=document.getElementById('aireport-threat').value.trim();
     var advice=document.getElementById('aireport-advice').value.trim();
     var summary=document.getElementById('aireport-summary').value.trim();
@@ -4731,7 +4934,7 @@ var INTELCENTER={
     if(id){
       var r=this._aiReports.find(function(x){return x.id===id;});
       if(r){
-        r.title=title;r.country=country;r.threatLevel=level;r.reportType=reportType;
+        r.title=title;r.country=country;r.threatLevel=level;r.reportType=reportType;r.reportMode=reportMode;
         r.threatAnalysis=threatAnalysis;r.advice=advice;r.summary=summary;
         r.elements=elements;r.materials=this._selectedMaterials.slice();r.updateTime=now;
       }
@@ -4739,7 +4942,7 @@ var INTELCENTER={
     }else{
       var nid='AIR-'+String(Date.now()).slice(-6);
       this._aiReports.unshift({
-        id:nid,title:title,country:country,threatLevel:level,reportType:reportType,
+        id:nid,title:title,country:country,threatLevel:level,reportType:reportType,reportMode:reportMode,
         threatAnalysis:threatAnalysis,advice:advice,summary:summary,elements:elements,
         materials:this._selectedMaterials.slice(),createTime:now,author:AUTH.user?AUTH.user.name:''
       });
@@ -4752,6 +4955,14 @@ var INTELCENTER={
   showAiReportDetail(id){
     var r=this._aiReports.find(function(x){return x.id===id;});
     if(!r)return;
+    // 根据报告分析模式确定各节标题
+    var modeL={
+      elements:{s:'📝 报告摘要',t:'🚧 对华威胁分析',a:'💡 对策建议',showEl:true},
+      strategic:{s:'📝 战略摘要',t:'🎯 战略影响评估',a:'📋 战略应对建议',showEl:false},
+      tactical:{s:'📝 事态摘要',t:'⚔️ 威胁评估与暴露面分析',a:'🛡️ 战术处置建议',showEl:false},
+      risk:{s:'📝 风险摘要',t:'📊 风险等级判定与传导分析',a:'🛡️ 风险防控建议',showEl:false}
+    };
+    var mL=modeL[r.reportMode]||modeL.elements;
     var lvClr=r.threatLevel==='critical'?'var(--red)':r.threatLevel==='high'?'var(--orange)':r.threatLevel==='medium'?'var(--yellow)':'var(--green)';
     var lvLabel=r.threatLevel==='critical'?'\u{1F534} \u7d27\u6025':r.threatLevel==='high'?'\u{1F7E0} \u9ad8\u5371':r.threatLevel==='medium'?'\u{1F7E1} \u4e2d\u5371':'\u{1F7E2} \u4f4e\u5371';
     var html='<div style="padding:12px;max-height:70vh;overflow-y:auto">';
@@ -4759,14 +4970,16 @@ var INTELCENTER={
     html+='<span style="font-size:10px;font-weight:700;color:'+lvClr+';padding:2px 8px;background:'+lvClr+'15;border-radius:4px">'+lvLabel+'</span>';
     html+='<span style="font-size:14px;font-weight:700">'+r.title+'</span>';
     html+='</div>';
+    var modeName={'elements':'综合要素分析','strategic':'战略类情报分析','tactical':'战术类情报分析','risk':'风险评估类情报分析'};
     html+='<div style="display:flex;gap:12px;font-size:10px;color:var(--text3);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)">'+
       '<span>\u{1F4C5} '+(r.createTime||'')+'</span>'+
       '<span>\u{1F464} '+(r.author||'')+'</span>'+
       '<span>\u{1F3AF} '+(r.country||'')+'</span>'+
       '<span>\u{1F4CB} '+(r.reportType||'')+'</span>'+
+      '<span style="color:var(--cyan)">\u{1F9E0} '+(modeName[r.reportMode]||'综合要素分析')+'</span>'+
       '</div>';
     // 摘要
-    if(r.summary){html+='<div style="padding:10px;background:var(--bg2);border-radius:6px;margin-bottom:12px;font-size:12px;color:var(--text2)"><b style="color:var(--cyan)">\u{1F4DD} \u62a5\u544a\u6458\u8981</b><br>'+r.summary+'</div>';}
+    if(r.summary){html+='<div style="padding:10px;background:var(--bg2);border-radius:6px;margin-bottom:12px;font-size:12px;color:var(--text2)"><b style="color:var(--cyan)">'+mL.s+'</b><br>'+r.summary+'</div>';}
     // 素材来源
     if(r.materials&&r.materials.length>0){
       html+='<div style="margin-bottom:12px"><b style="color:var(--orange);font-size:11px">\u{1F4CC} \u5206\u6790\u7d20\u6750 ('+r.materials.length+'\u4e2a)</b><div style="display:grid;gap:4px;margin-top:6px">';
@@ -4775,8 +4988,8 @@ var INTELCENTER={
       });
       html+='</div></div>';
     }
-    // 现状分析六要素
-    if(r.elements){
+    // 现状分析六要素（仅综合要素分析模式显示）
+    if(mL.showEl&&r.elements){
       html+='<div style="margin-bottom:12px"><b style="color:var(--cyan);font-size:11px">\u{1F50D} \u73b0\u72b6\u5206\u6790\uff08\u516d\u8981\u7d20\uff09</b><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">';
       var elLabels={time:'\u65f6\u95f4',place:'\u5730\u70b9',person:'\u4eba\u7269',cause:'\u8d77\u56e0',process:'\u8fc7\u7a0b',result:'\u7ed3\u679c'};
       Object.keys(elLabels).forEach(function(k){
@@ -4786,13 +4999,13 @@ var INTELCENTER={
       });
       html+='</div></div>';
     }
-    // 对华威胁
+    // 威胁/评估分析
     if(r.threatAnalysis){
-      html+='<div style="padding:10px;background:rgba(255,51,85,0.06);border:1px solid rgba(255,51,85,0.2);border-radius:6px;margin-bottom:12px"><b style="color:var(--red);font-size:11px">\u{1F6A6} \u5bf9\u534e\u5a01\u80c1\u5206\u6790</b><div style="font-size:12px;color:var(--text2);margin-top:6px;white-space:pre-wrap">'+r.threatAnalysis+'</div></div>';
+      html+='<div style="padding:10px;background:rgba(255,51,85,0.06);border:1px solid rgba(255,51,85,0.2);border-radius:6px;margin-bottom:12px"><b style="color:var(--red);font-size:11px">'+mL.t+'</b><div style="font-size:12px;color:var(--text2);margin-top:6px;white-space:pre-wrap">'+r.threatAnalysis+'</div></div>';
     }
-    // 对策建议
+    // 对策/处置建议
     if(r.advice){
-      html+='<div style="padding:10px;background:rgba(0,255,159,0.06);border:1px solid rgba(0,255,159,0.2);border-radius:6px;margin-bottom:12px"><b style="color:var(--green);font-size:11px">\u{1F4A1} \u5bf9\u7b56\u5efa\u8bae</b><div style="font-size:12px;color:var(--text2);margin-top:6px;white-space:pre-wrap">'+r.advice+'</div></div>';
+      html+='<div style="padding:10px;background:rgba(0,255,159,0.06);border:1px solid rgba(0,255,159,0.2);border-radius:6px;margin-bottom:12px"><b style="color:var(--green);font-size:11px">'+mL.a+'</b><div style="font-size:12px;color:var(--text2);margin-top:6px;white-space:pre-wrap">'+r.advice+'</div></div>';
     }
     html+='<div style="display:flex;gap:8px">'+
       '<button class="btn primary sm" onclick="INTELCENTER.showAiReportForm(\''+r.id+'\')">\u270f\ufe0f \u7f16\u8f91</button>'+
@@ -4827,6 +5040,17 @@ var INTELCENTER={
     function pFooter(t){return '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:line="560" w:line-rule="exact" w:before="480"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="仿宋" w:eastAsia="仿宋" w:hAnsi="仿宋"/><w:sz w:val="24"/><w:color w:val="666666"/></w:rPr><w:t xml:space="preserve">'+xe(t)+'</w:t></w:r></w:p>';}
     function paras(text,fn){var parts=text.split(/\n\n+/);var out='';for(var i=0;i<parts.length;i++){var p=parts[i].trim();if(p)out+=fn(p);}return out;}
 
+    // 根据报告分析模式确定各节标题
+    var modeLabels={
+      elements:{summary:'报告摘要',threat:'对华威胁分析',advice:'对策建议',showElements:true},
+      strategic:{summary:'战略摘要',threat:'战略影响评估',advice:'战略应对建议',showElements:false},
+      tactical:{summary:'事态摘要',threat:'威胁评估与暴露面分析',advice:'战术处置建议',showElements:false},
+      risk:{summary:'风险摘要',threat:'风险等级判定与传导分析',advice:'风险防控建议',showElements:false}
+    };
+    var ml=modeLabels[r.reportMode]||modeLabels.elements;
+    var modeNameMap={'elements':'综合要素分析','strategic':'战略类情报分析','tactical':'战术类情报分析','risk':'风险评估类情报分析'};
+    var modeNameStr=modeNameMap[r.reportMode]||'综合要素分析';
+
     var xml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
     xml+='<?mso-application progid="Word.Document"?>';
     xml+='<w:wordDocument xmlns:w="http://schemas.microsoft.com/office/word/2003/wordml" xmlns:wx="http://schemas.microsoft.com/office/word/2003/auxHint" xmlns:o="urn:schemas-microsoft-com:office:office">';
@@ -4835,10 +5059,11 @@ var INTELCENTER={
 
     xml+=pTitle(r.title);
     xml+=pMeta('报告编号：'+r.id+'    威胁等级：'+lvLabel+'    编制时间：'+(r.createTime||now));
-    xml+=pMeta('关注国家/区域：'+(r.country||'—')+'    报告类型：'+(r.reportType||'—')+'    编制人：'+(r.author||'—'));
+    xml+=pMeta('关注国家/区域：'+(r.country||'—')+'    报告类型：'+(r.reportType||'—')+'    分析模式：'+modeNameStr);
+    xml+=pMeta('编制人：'+(r.author||'—'));
 
     if(r.summary){
-      xml+=pHeading('报告摘要');
+      xml+=pHeading(ml.summary);
       xml+=paras(r.summary,pBody);
     }
     if(r.materials&&r.materials.length>0){
@@ -4847,7 +5072,7 @@ var INTELCENTER={
         xml+=pBody('['+m.source+'] '+m.title+(m.country?' | '+m.country:'')+(m.date?' | '+m.date:''));
       });
     }
-    if(r.elements){
+    if(ml.showElements&&r.elements){
       xml+=pHeading('现状分析（六要素）');
       xml+='<w:tbl><w:tblPr><w:tblW w:w="9600" w:type="dxa"/><w:tblBorders><w:top w:val="single" w:sz="4" w:color="999999"/><w:left w:val="single" w:sz="4" w:color="999999"/><w:bottom w:val="single" w:sz="4" w:color="999999"/><w:right w:val="single" w:sz="4" w:color="999999"/><w:insideH w:val="single" w:sz="4" w:color="999999"/><w:insideV w:val="single" w:sz="4" w:color="999999"/></w:tblBorders></w:tblPr>';
       xml+='<w:tblGrid><w:gridCol w:w="1600"/><w:gridCol w:w="8000"/></w:tblGrid>';
@@ -4867,11 +5092,11 @@ var INTELCENTER={
       xml+='</w:tbl>';
     }
     if(r.threatAnalysis){
-      xml+=pHeading('对华威胁分析');
+      xml+=pHeading(ml.threat);
       xml+=paras(r.threatAnalysis,pBody);
     }
     if(r.advice){
-      xml+=pHeading('对策建议');
+      xml+=pHeading(ml.advice);
       xml+=paras(r.advice,pBody);
     }
     xml+=pFooter('本报告由海外利益保护情报预警平台自动生成 | '+now);
