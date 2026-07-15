@@ -3083,8 +3083,8 @@ const AUTH={
     // 试用账号到期检查
     if(acct.isTrial&&acct.expireTime){
       var now=new Date().getTime();
-      var expire=new Date(acct.expireTime).getTime();
-      if(now>expire){
+      var expire=this._parseTime(acct.expireTime);
+      if(!isNaN(expire)&&now>expire){
         acct.status='expired';
         localStorage.setItem('orps_acct_'+u,JSON.stringify(acct));
         showToast('试用账号已过期，请联系管理员续期');
@@ -3152,7 +3152,7 @@ const AUTH={
       role:'user',
       isTrial:true,
       createTime:now.toLocaleString('zh-CN'),
-      expireTime:expire.toLocaleString('zh-CN'),
+      expireTime:expire.toISOString(),
       note:note||'',
       regTime:now.toLocaleString('zh-CN')
     };
@@ -3170,7 +3170,7 @@ const AUTH={
     var now=new Date().getTime();
     var startTime=Math.max(baseTime,now);
     var newExpire=new Date(startTime+days*24*60*60*1000);
-    acct.expireTime=newExpire.toLocaleString('zh-CN');
+    acct.expireTime=newExpire.toISOString();
     if(acct.status==='expired')acct.status='approved';
     localStorage.setItem('orps_acct_'+username,JSON.stringify(acct));
     showToast('已续期 '+days+' 天，新到期时间: '+acct.expireTime);
@@ -3179,10 +3179,26 @@ const AUTH={
   checkTrialStatus(){
     if(!this.user||!this.user.isTrial)return null;
     if(!this.user.expireTime)return null;
+    var expire=this._parseTime(this.user.expireTime);
+    if(!expire||isNaN(expire))return null;
     var now=new Date().getTime();
-    var expire=new Date(this.user.expireTime).getTime();
     var remain=Math.ceil((expire-now)/(24*60*60*1000));
     return {remain:remain,expireTime:this.user.expireTime};
+  },
+  // 安全解析日期时间（兼容 ISO 8601 和 toLocaleString 格式）
+  _parseTime(timeStr){
+    if(!timeStr)return NaN;
+    // 优先尝试直接解析
+    var d=new Date(timeStr);
+    if(!isNaN(d.getTime()))return d.getTime();
+    // 尝试替换中文日期格式（如 "2026年8月14日 上午8:49:29"）
+    var cleaned=timeStr
+      .replace(/年/g,'/').replace(/月/g,'/').replace(/日/g,' ')
+      .replace(/上午/g,'AM').replace(/下午/g,'PM')
+      .replace(/[\u2009\u00A0]/g,' '); // thin space / nbsp
+    d=new Date(cleaned);
+    if(!isNaN(d.getTime()))return d.getTime();
+    return NaN;
   }
 };
 
@@ -9859,7 +9875,7 @@ var SETTINGS={
       html+='<div style="overflow-x:auto"><table style="width:100%;font-size:11px;border-collapse:collapse">';
       html+='<thead><tr style="border-bottom:2px solid var(--border2)"><th style="text-align:left;padding:6px">\u7528\u6237\u540d</th><th style="text-align:left;padding:6px">\u521b\u5efa\u65f6\u95f4</th><th style="text-align:left;padding:6px">\u5230\u671f\u65f6\u95f4</th><th style="text-align:center;padding:6px">\u72b6\u6001</th><th style="text-align:center;padding:6px">\u64cd\u4f5c</th></tr></thead><tbody>';
       trialUsers.forEach(function(u){
-        var expireTime=u.expireTime?new Date(u.expireTime).getTime():0;
+        var expireTime=u.expireTime?AUTH._parseTime(u.expireTime):0;
         var isExpired=now>expireTime;
         var remainDays=Math.ceil((expireTime-now)/(24*60*60*1000));
         var statusClr=isExpired?'var(--red)':remainDays<=3?'var(--orange)':'var(--green)';
