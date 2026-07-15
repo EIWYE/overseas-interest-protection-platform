@@ -4436,11 +4436,74 @@ var INTELCENTER={
     return materials;
   },
   _selectedMaterials:[],
+  // 预警推送至AI报告的预填充数据
+  _pendingPush:null,
+  // 单条预警推送至AI情报分析报告
+  pushAlertToReport(alertId){
+    if(!PERM.canUpload()){showToast('⚠️ 请先登录');return;}
+    var a=ALERTS.find(function(x){return x.id===alertId;});
+    if(!a){showToast('⚠️ 预警不存在');return;}
+    var mat={id:'ALERT-'+a.id,source:'预警中心',title:a.title||a.target||'',country:a.country||'',date:a.time||'',severity:a.level||'',desc:a.desc||a.detail||'',type:'alert'};
+    var lvMap={red:'critical',orange:'high',yellow:'medium',blue:'low'};
+    this._pendingPush={
+      materials:[mat],
+      title:(a.title||'预警事件')+' — 情报分析报告',
+      country:a.country||'',
+      threatLevel:lvMap[a.level]||'medium',
+      reportType:a.type?'威胁评估':'事件分析'
+    };
+    navigateTo('aireport');
+    var self=this;
+    setTimeout(function(){self.showAiReportForm();},300);
+    showToast('🤖 已将预警「'+(a.title||'').substring(0,20)+'」推送至AI报告');
+  },
+  // 批量预警推送至AI情报分析报告
+  pushAlertsToReport(alertIds){
+    if(!PERM.canUpload()){showToast('⚠️ 请先登录');return;}
+    if(!alertIds||alertIds.length===0){showToast('⚠️ 请选择至少1条预警');return;}
+    var mats=[];
+    var countries=[];
+    var maxLevel='low';
+    var lvOrder={red:0,orange:1,yellow:2,blue:3};
+    alertIds.forEach(function(aid){
+      var a=ALERTS.find(function(x){return x.id===aid;});
+      if(a){
+        mats.push({id:'ALERT-'+a.id,source:'预警中心',title:a.title||a.target||'',country:a.country||'',date:a.time||'',severity:a.level||'',desc:a.desc||a.detail||'',type:'alert'});
+        if(a.country&&countries.indexOf(a.country)<0)countries.push(a.country);
+        if(lvOrder[a.level]<lvOrder[maxLevel])maxLevel=a.level;
+      }
+    });
+    if(mats.length===0){showToast('⚠️ 未找到有效预警');return;}
+    var lvMap={red:'critical',orange:'high',yellow:'medium',blue:'low'};
+    this._pendingPush={
+      materials:mats,
+      title:countries.length>0?countries.join('、')+'多预警综合情报分析报告':'多预警综合情报分析报告',
+      country:countries.join('、'),
+      threatLevel:lvMap[maxLevel]||'medium',
+      reportType:'综合情报'
+    };
+    navigateTo('aireport');
+    var self=this;
+    setTimeout(function(){self.showAiReportForm();},300);
+    showToast('🤖 已将'+mats.length+'条预警推送至AI报告');
+  },
   showAiReportForm(id){
     this._aiReportInit();
     if(!PERM.canUpload()){showToast('\u26a0\ufe0f 请先登录');return;}
     var r=id?this._aiReports.find(function(x){return x.id===id;}):null;
-    this._selectedMaterials=r&&r.materials?r.materials.slice():[];
+    var pf=this._pendingPush;
+    if(r){
+      this._selectedMaterials=r.materials?r.materials.slice():[];
+    }else if(pf){
+      this._selectedMaterials=pf.materials?pf.materials.slice():[];
+    }else{
+      this._selectedMaterials=[];
+    }
+    var pfTitle=(!r&&pf)?pf.title:'';
+    var pfCountry=(!r&&pf)?pf.country:'';
+    var pfLevel=(!r&&pf)?pf.threatLevel:'';
+    var pfType=(!r&&pf)?pf.reportType:'';
+    this._pendingPush=null;
     var materials=this._gatherMaterials();
     // 按来源分组
     var groups={};
@@ -4449,10 +4512,10 @@ var INTELCENTER={
     html+='<div style="font-size:12px;color:var(--text3);margin-bottom:10px">'+(r?'\u7f16\u8f91\u60c5\u62a5\u5206\u6790\u62a5\u544a ['+r.id+']':'\u65b0\u5efaAI\u60c5\u62a5\u5206\u6790\u62a5\u544a')+' \u2014 \u9009\u62e9\u7cfb\u7edf\u4e2d\u7684\u6848\u4f8b/\u9884\u8b66/\u5a01\u80c1\u7ec4\u7ec7\u7b49\u4f5c\u4e3a\u7d20\u6750</div>';
     // 基本信息表单
     html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">';
-    html+='<div><label class="text-xs text-muted" style="display:block;margin-bottom:4px">\u62a5\u544a\u6807\u9898 <span style="color:var(--red)">*</span></label><input class="input" id="aireport-title" value="'+(r?r.title:'')+'" placeholder="\u5982\uff1a\u7ea2\u6d77\u822a\u8fd0\u5b89\u5168\u5f62\u52bf\u5206\u6790" style="font-size:12px;width:100%"></div>';
-    html+='<div><label class="text-xs text-muted" style="display:block;margin-bottom:4px">\u5173\u6ce8\u56fd\u5bb6/\u533a\u57df</label><input class="input" id="aireport-country" value="'+(r?r.country:'')+'" placeholder="\u5982\uff1a\u4e5f\u95e8\u3001\u7ea2\u6d77\u6cbf\u5cb8" style="font-size:12px;width:100%"></div>';
-    html+='<div><label class="text-xs text-muted" style="display:block;margin-bottom:4px">\u5a01\u80c1\u7b49\u7ea7</label><select class="select" id="aireport-level" style="font-size:12px;width:100%"><option value="critical"'+(r&&r.threatLevel==='critical'?' selected':'')+'>\u{1F534} \u7d27\u6025</option><option value="high"'+(r&&r.threatLevel==='high'?' selected':'')+'>\u{1F7E0} \u9ad8\u5371</option><option value="medium"'+(r&&r.threatLevel==='medium'?' selected':'')+'>\u{1F7E1} \u4e2d\u5371</option><option value="low"'+(r&&r.threatLevel==='low'?' selected':'')+'>\u{1F7E2} \u4f4e\u5371</option></select></div>';
-    html+='<div><label class="text-xs text-muted" style="display:block;margin-bottom:4px">\u62a5\u544a\u7c7b\u578b</label><select class="select" id="aireport-type" style="font-size:12px;width:100%"><option value="\u4e8b\u4ef6\u5206\u6790"'+(r&&r.reportType==='\u4e8b\u4ef6\u5206\u6790'?' selected':'')+'>\u4e8b\u4ef6\u5206\u6790</option><option value="\u5f62\u52bf\u8bc4\u4f30"'+(r&&r.reportType==='\u5f62\u52bf\u8bc4\u4f30'?' selected':'')+'>\u5f62\u52bf\u8bc4\u4f30</option><option value="\u98ce\u9669\u9884\u8b66"'+(r&&r.reportType==='\u98ce\u9669\u9884\u8b66'?' selected':'')+'>\u98ce\u9669\u9884\u8b66</option><option value="\u5a01\u80c1\u8bc4\u4f30"'+(r&&r.reportType==='\u5a01\u80c1\u8bc4\u4f30'?' selected':'')+'>\u5a01\u80c1\u8bc4\u4f30</option><option value="\u7efc\u5408\u60c5\u62a5"'+(r&&r.reportType==='\u7efc\u5408\u60c5\u62a5'?' selected':'')+'>\u7efc\u5408\u60c5\u62a5</option></select></div>';
+    html+='<div><label class="text-xs text-muted" style="display:block;margin-bottom:4px">\u62a5\u544a\u6807\u9898 <span style="color:var(--red)">*</span></label><input class="input" id="aireport-title" value="'+(r?r.title:pfTitle)+'" placeholder="\u5982\uff1a\u7ea2\u6d77\u822a\u8fd0\u5b89\u5168\u5f62\u52bf\u5206\u6790" style="font-size:12px;width:100%"></div>';
+    html+='<div><label class="text-xs text-muted" style="display:block;margin-bottom:4px">\u5173\u6ce8\u56fd\u5bb6/\u533a\u57df</label><input class="input" id="aireport-country" value="'+(r?r.country:pfCountry)+'" placeholder="\u5982\uff1a\u4e5f\u95e8\u3001\u7ea2\u6d77\u6cbf\u5cb8" style="font-size:12px;width:100%"></div>';
+    html+='<div><label class="text-xs text-muted" style="display:block;margin-bottom:4px">\u5a01\u80c1\u7b49\u7ea7</label><select class="select" id="aireport-level" style="font-size:12px;width:100%"><option value="critical"'+(r&&r.threatLevel==='critical'||!r&&pfLevel==='critical'?' selected':'')+'>\u{1F534} \u7d27\u6025</option><option value="high"'+(r&&r.threatLevel==='high'||!r&&pfLevel==='high'?' selected':'')+'>\u{1F7E0} \u9ad8\u5371</option><option value="medium"'+(r&&r.threatLevel==='medium'||!r&&pfLevel==='medium'?' selected':'')+'>\u{1F7E1} \u4e2d\u5371</option><option value="low"'+(r&&r.threatLevel==='low'||!r&&pfLevel==='low'?' selected':'')+'>\u{1F7E2} \u4f4e\u5371</option></select></div>';
+    html+='<div><label class="text-xs text-muted" style="display:block;margin-bottom:4px">\u62a5\u544a\u7c7b\u578b</label><select class="select" id="aireport-type" style="font-size:12px;width:100%"><option value="\u4e8b\u4ef6\u5206\u6790"'+(r&&r.reportType==='\u4e8b\u4ef6\u5206\u6790'||!r&&pfType==='\u4e8b\u4ef6\u5206\u6790'?' selected':'')+'>\u4e8b\u4ef6\u5206\u6790</option><option value="\u5f62\u52bf\u8bc4\u4f30"'+(r&&r.reportType==='\u5f62\u52bf\u8bc4\u4f30'||!r&&pfType==='\u5f62\u52bf\u8bc4\u4f30'?' selected':'')+'>\u5f62\u52bf\u8bc4\u4f30</option><option value="\u98ce\u9669\u9884\u8b66"'+(r&&r.reportType==='\u98ce\u9669\u9884\u8b66'||!r&&pfType==='\u98ce\u9669\u9884\u8b66'?' selected':'')+'>\u98ce\u9669\u9884\u8b66</option><option value="\u5a01\u80c1\u8bc4\u4f30"'+(r&&r.reportType==='\u5a01\u80c1\u8bc4\u4f30'||!r&&pfType==='\u5a01\u80c1\u8bc4\u4f30'?' selected':'')+'>\u5a01\u80c1\u8bc4\u4f30</option><option value="\u7efc\u5408\u60c5\u62a5"'+(r&&r.reportType==='\u7efc\u5408\u60c5\u62a5'||!r&&pfType==='\u7efc\u5408\u60c5\u62a5'?' selected':'')+'>\u7efc\u5408\u60c5\u62a5</option></select></div>';
     html+='</div>';
     // 分析模式选择
     html+='<div style="margin-bottom:10px"><label class="text-xs text-muted" style="display:block;margin-bottom:4px">分析模式</label><select class="select" id="aireport-mode" style="font-size:12px;width:100%" onchange="INTELCENTER._onModeChange()"><option value="elements"'+(r&&r.reportMode==='strategic'||r&&r.reportMode==='tactical'||r&&r.reportMode==='risk'?'':' selected')+'>综合要素分析（六要素+威胁+建议）</option><option value="strategic"'+(r&&r.reportMode==='strategic'?' selected':'')+'>战略类情报分析</option><option value="tactical"'+(r&&r.reportMode==='tactical'?' selected':'')+'>战术类情报分析</option><option value="risk"'+(r&&r.reportMode==='risk'?' selected':'')+'>风险评估类情报分析</option></select></div>';
@@ -7405,6 +7468,7 @@ const AVIEW={
       '<select class="select" style="font-size:11px;padding:4px 8px" onchange="AVIEW.filterStatus=this.value;AVIEW.renderQueue()"><option value="all">全部状态</option><option value="active">待处理</option><option value="acknowledged">已确认</option><option value="responding">处置中</option><option value="resolved">已解除</option></select>'+
       '<button class="btn sm primary" onclick="AVIEW.simulateFeed()" style="font-size:10px;white-space:nowrap">📡 模拟预警</button>'+
       '<button class="btn sm" onclick="AVIEW.generateInsight()" style="font-size:10px;white-space:nowrap">🤖 AI分析</button>'+
+      (PERM.canUpload()?'<button class="btn sm" style="font-size:10px;white-space:nowrap;background:rgba(0,212,255,0.1);border-color:var(--cyan);color:var(--cyan)" onclick="AVIEW.batchPushToReport()">🤖 批量推送至AI报告</button>':'')+
       '<button class="btn sm primary" onclick="AVIEW.showAlertForm()" style="font-size:10px;white-space:nowrap">➕ 新增预警</button>'+
       '<button class="btn sm" onclick="AVIEW.exportData()" style="font-size:10px;white-space:nowrap">📥 导出</button>'+
       '</div>';
@@ -7440,6 +7504,7 @@ const AVIEW={
         '<span style="color:'+(sc[a.status]||'#999')+';font-weight:600">●'+(sl[a.status]||a.status)+'</span>'+
         '<span style="margin-left:auto;display:flex;gap:2px">'+
         (PERM.isAdmin()?'<button class="btn sm" style="font-size:9px;padding:1px 5px" onclick="event.stopPropagation();AVIEW.showAlertForm(\''+a.id+'\')">✏️</button>':'')+
+        (PERM.canUpload()?'<button class="btn sm" style="font-size:9px;padding:1px 5px;background:rgba(0,212,255,0.1);color:var(--cyan)" onclick="event.stopPropagation();INTELCENTER.pushAlertToReport(\''+a.id+'\')" title="推送至AI报告">🤖</button>':'')+
         (PERM.isAdmin()?'<button class="btn sm danger" style="font-size:9px;padding:1px 5px" onclick="event.stopPropagation();AVIEW.deleteAlert(\''+a.id+'\')">🗑️</button>':'')+
         '</span>'+
         '</div></div>';
@@ -7476,6 +7541,9 @@ const AVIEW={
     else if(a.status==='acknowledged')actions='<button class="btn primary sm" onclick="AVIEW.respond(\''+a.id+'\')">🏃 启动处置</button><button class="btn sm" onclick="AVIEW.showPlaybook(\''+a.type+'\')">📖 预案</button>';
     else if(a.status==='responding')actions='<button class="btn primary sm" onclick="AVIEW.resolve(\''+a.id+'\')">✅ 解除预警</button><button class="btn sm" onclick="AVIEW.showPlaybook(\''+a.type+'\')">📖 预案</button>';
     else actions='<button class="btn sm" onclick="AVIEW.reopen(\''+a.id+'\')">🔄 重新激活</button>';
+    }
+    if(PERM.canUpload()){
+      actions+='<button class="btn sm" style="background:rgba(0,212,255,0.1);border-color:var(--cyan);color:var(--cyan)" onclick="INTELCENTER.pushAlertToReport(\''+a.id+'\')">🤖 推送至AI报告</button>';
     }
     var logs=AVIEW.responseLogs[a.id]||[];
     var defaultLogs=[{time:a.time,action:'预警生成',desc:'系统自动监测到异常，生成'+lv.label+'预警'}];
@@ -7558,6 +7626,26 @@ const AVIEW={
       showToast('⬆️ 预警已升级至'+ALERT_LV[a.level].label);
     }
     this.renderStats();this.renderQueue();this.renderDetail();renderTicker();
+  },
+  batchPushToReport(){
+    if(!PERM.canUpload()){showToast('⚠️ 请先登录');return;}
+    var alerts=ALERTS.slice();
+    if(this.filterLevel!=='all')alerts=alerts.filter(function(a){return a.level===AVIEW.filterLevel;});
+    if(this.filterStatus!=='all')alerts=alerts.filter(function(a){return a.status===AVIEW.filterStatus;});
+    if(this.searchQuery){
+      var q=this.searchQuery.toLowerCase();
+      alerts=alerts.filter(function(a){
+        return(a.title||'').toLowerCase().indexOf(q)>=0||(a.country||'').toLowerCase().indexOf(q)>=0||(a.enterprise||'').toLowerCase().indexOf(q)>=0;
+      });
+    }
+    if(alerts.length===0){showToast('⚠️ 当前筛选条件下无预警');return;}
+    var ids=alerts.map(function(a){return a.id;});
+    var lvSummary={red:0,orange:0,yellow:0,blue:0};
+    alerts.forEach(function(a){if(lvSummary[a.level])lvSummary[a.level]++;});
+    var lvText=Object.keys(lvSummary).filter(function(k){return lvSummary[k]>0;}).map(function(k){return lvSummary[k]+'条'+ALERT_LV[k].label;}).join('、');
+    showConfirm('将当前筛选的 '+alerts.length+' 条预警（'+lvText+'）批量推送至AI情报分析报告？',function(){
+      INTELCENTER.pushAlertsToReport(ids);
+    });
   },
   reopen(id){if(!PERM.guard('\u91cd\u65b0\u6fc0\u6d3b\u9884\u8b66'))return;
     var a=ALERTS.find(function(x){return x.id===id;});
