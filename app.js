@@ -4491,8 +4491,10 @@ var INTELCENTER={
     html+='</div>';
     html+='<button class="btn sm" id="aireport-autofill-btn" style="margin-top:6px;font-size:10px;padding:2px 10px" onclick="INTELCENTER._aiAutoFill()">\u{1F916} AI\u81ea\u52a8\u586b\u5145\u516d\u8981\u7d20</button>';
     html+='</div>';
-    // 对华威胁
+    // 对华威胁/现状分析
     html+='<div style="margin-bottom:10px"><label class="text-xs text-muted" style="display:block;margin-bottom:4px" id="aireport-threat-label">\u{1F6A6} \u5bf9\u534e\u5a01\u80c1\u5206\u6790</label><textarea class="input" id="aireport-threat" rows="3" placeholder="\u5206\u6790\u8be5\u4e8b\u4ef6\u5bf9\u4e2d\u56fd\u6d77\u5916\u5229\u76ca\u3001\u4e2d\u8d44\u4f01\u4e1a\u3001\u4e00\u5e26\u4e00\u8def\u9879\u76ee\u7684\u5a01\u80c1..." style="font-size:12px;width:100%;resize:vertical">'+(r?r.threatAnalysis||'':'')+'</textarea></div>';
+    // 中间分析字段（影响预测/对我威胁，仅战略和风险评估模式显示）
+    html+='<div id="aireport-impact-section" style="margin-bottom:10px;display:none"><label class="text-xs text-muted" style="display:block;margin-bottom:4px" id="aireport-impact-label">📋 影响预测</label><textarea class="input" id="aireport-impact" rows="3" placeholder="..." style="font-size:12px;width:100%;resize:vertical">'+(r?r.impactAnalysis||'':'')+'</textarea></div>';
     // 对策建议
     html+='<div style="margin-bottom:10px"><label class="text-xs text-muted" style="display:block;margin-bottom:4px" id="aireport-advice-label">\u{1F4A1} \u5bf9\u7b56\u5efa\u8bae</label><textarea class="input" id="aireport-advice" rows="3" placeholder="\u63d0\u51fa\u5e94\u5bf9\u63aa\u65bd\u548c\u5efa\u8bae..." style="font-size:12px;width:100%;resize:vertical">'+(r?r.advice||'':'')+'</textarea></div>';
     // 摘要
@@ -4533,16 +4535,18 @@ var INTELCENTER={
     var elSec=document.getElementById('aireport-elements-section');
     if(elSec)elSec.style.display=(mode==='elements')?'block':'none';
     var L={
-      elements:{t:'🚧 对华威胁分析',a:'💡 对策建议',s:'📝 报告摘要',auto:'🤖 AI自动填充六要素'},
-      strategic:{t:'🎯 战略现状分析与影响预测',a:'📋 对策建议',s:'📝 战略摘要',auto:''},
-      tactical:{t:'⚔️ 威胁评估与暴露面分析',a:'🛡️ 战术处置建议',s:'📝 事态摘要',auto:''},
-      risk:{t:'📊 风险事件现状与对我威胁',a:'🛡️ 对策建议',s:'📝 风险摘要',auto:''}
+      elements:{t:'🚧 对华威胁分析',i:'',a:'💡 对策建议',s:'📝 报告摘要',auto:'🤖 AI自动填充六要素',showImpact:false},
+      strategic:{t:'🎯 战略现状分析',i:'📋 影响预测',a:'📋 对策建议',s:'📝 战略摘要',auto:'',showImpact:true},
+      tactical:{t:'⚔️ 威胁评估与暴露面分析',i:'',a:'🛡️ 战术处置建议',s:'📝 事态摘要',auto:'',showImpact:false},
+      risk:{t:'📊 风险事件现状',i:'⚠️ 对我威胁',a:'🛡️ 对策建议',s:'📝 风险摘要',auto:'',showImpact:true}
     };
     var l=L[mode]||L.elements;
     var tl=document.getElementById('aireport-threat-label');if(tl)tl.textContent=l.t;
+    var il=document.getElementById('aireport-impact-label');if(il)il.textContent=l.i;
     var al=document.getElementById('aireport-advice-label');if(al)al.textContent=l.a;
     var sl=document.getElementById('aireport-summary-label');if(sl)sl.textContent=l.s;
     var ab=document.getElementById('aireport-autofill-btn');if(ab)ab.style.display=l.auto?'inline-block':'none';
+    var imSec=document.getElementById('aireport-impact-section');if(imSec)imSec.style.display=l.showImpact?'block':'none';
   },
   // AI自动填充六要素 (基于选中素材)
   _aiAutoFill(){
@@ -4599,7 +4603,7 @@ var INTELCENTER={
       '当前'+countryStr+'安全态势处于战略转折节点，多重矛盾集中爆发、大国博弈持续深化。经战略评估，该区域事态对我海外利益构成中长期结构性影响，须从战略高度统筹应对。区域动态风险评分达'+cRisk.toFixed(1)+'分，属'+riskDesc+'区间。本报告基于'+mats.length+'个情报素材，形成战略现状分析、影响预测及对策建议。'
     ]);}
 
-    // === 第一部分：战略现状分析 ===
+    // === 第一部分：战略现状分析（填入threatAnalysis字段）===
     var sParts=[];
     sParts.push(pick([
       '第一，大国博弈格局持续深化。经情报融合分析，'+countryStr+'当前安全态势恶化并非孤立事件，而是多重战略矛盾集中爆发的结果。一是相关大国在该区域的军事部署、经济制裁、外交施压等动作频繁，战略竞争态势日趋尖锐。二是地区安全架构失衡，传统安全机制弱化、新兴威胁管控缺位，形成了安全真空。三是内部政治生态脆弱，政治转型期的治理能力不足加剧了社会动荡。'+entStr+'等中资企业在当地的战略布局面临深度调整压力，须从战略高度重新评估区域定位与投入规模。',
@@ -4614,7 +4618,10 @@ var INTELCENTER={
       '第三，海外利益保护面临战略考验。'+entStr+'等企业在'+countryStr+'的战略布局进入深水区。一是大国竞争向经济领域溢出，我企业面临被"精准脱钩"的风险。二是东道国在大国之间的"选边站队"压力加大，中立空间被持续压缩，合作环境趋于复杂。三是安全风险与经济风险加速融合，形成复合型风险格局。四是区域安全秩序面临重构，新的安全架构尚在孕育之中，不确定性显著上升。'
     ]));
 
-    // === 第二部分：影响预测 ===
+    var threatEl=document.getElementById('aireport-threat');
+    if(threatEl)threatEl.value=sParts.join('\n\n');
+
+    // === 第二部分：影响预测（填入impactAnalysis字段）===
     var fParts=[];
     fParts.push(pick([
       '第一，短期影响预判。基于当前态势研判，未来三至六个月内，'+countryStr+'安全形势将对我国海外利益产生以下短期影响。一是人员安全风险持续高位运行，中方人员面临直接人身威胁的可能性上升。二是项目运营面临阶段性中断风险，安全形势恶化可能导致部分项目停工或延期。三是物流供应链受阻，运输成本上升、保险费率攀升，影响企业经营效益。四是舆论环境可能进一步恶化，虚假信息和涉华负面报道可能引发东道国民众对中资企业的敌意。'+entStr+'等企业须做好短期风险应对准备，确保人员安全为第一优先。',
@@ -4629,9 +4636,8 @@ var INTELCENTER={
       '第三，极端情景研判与战略预警。经战略推演分析，若当前事态持续升级，可能触发以下极端情景。一是区域冲突全面爆发，导致在华侨民和资产面临系统性安全威胁。二是国际制裁联动升级，中资企业面临金融断供、技术封锁、市场准入限制等多重压力。三是供应链断裂向全球扩散，影响范围超出单一区域，对全球贸易体系产生冲击。四是地缘政治格局深度重构，大国关系面临新的战略平衡。'+entStr+'等企业须建立极端情景应对预案，储备战略资源，确保在极端情况下维持基本运营能力并保护好人员安全。'
     ]));
 
-    // 合并战略现状分析与影响预测
-    var threatEl=document.getElementById('aireport-threat');
-    if(threatEl)threatEl.value='一、战略现状分析\n\n'+sParts.join('\n\n')+'\n\n二、影响预测\n\n'+fParts.join('\n\n');
+    var impactEl=document.getElementById('aireport-impact');
+    if(impactEl)impactEl.value=fParts.join('\n\n');
 
     // === 第三部分：对策建议 ===
     var aParts=[];
@@ -4757,9 +4763,13 @@ var INTELCENTER={
       '第三，战略利益威胁评估。'+countryStr+'风险事件对我国战略利益的威胁呈现多层次、长周期特征。一是战略通道安全面临挑战，'+countryStr+'的安全态势可能影响我国贸易运输线和能源进口通道。二是海外投资战略面临调整压力，安全风险上升可能导致部分项目重新评估或退出，影响海外布局的整体推进。三是双边关系面临考验，安全形势恶化可能影响中国与东道国的政治互信和经贸合作。四是国际竞争格局变化，大国可能利用'+countryStr+'风险事件扩大自身影响力，压缩中国的战略空间。五是多边合作机制受冲击，区域安全合作和经济一体化进程可能因风险事件而放缓或中断。'
     ]));
 
-    // 合并风险事件现状与对我威胁
+    // 风险事件现状 → aireport-threat
     var threatEl=document.getElementById('aireport-threat');
-    if(threatEl)threatEl.value='一、风险事件现状\n\n'+sParts.join('\n\n')+'\n\n二、对我威胁\n\n'+tParts.join('\n\n');
+    if(threatEl)threatEl.value=sParts.join('\n\n');
+
+    // 对我威胁 → aireport-impact
+    var impactEl=document.getElementById('aireport-impact');
+    if(impactEl)impactEl.value=tParts.join('\n\n');
 
     // === 第三部分：对策建议 ===
     var aParts=[];
@@ -4952,6 +4962,8 @@ var INTELCENTER={
     var threatAnalysis=document.getElementById('aireport-threat').value.trim();
     var advice=document.getElementById('aireport-advice').value.trim();
     var summary=document.getElementById('aireport-summary').value.trim();
+    var impactEl=document.getElementById('aireport-impact');
+    var impactAnalysis=impactEl?impactEl.value.trim():'';
     var elements={};
     ['time','place','person','cause','process','result'].forEach(function(k){
       var el=document.getElementById('aireport-el-'+k);
@@ -4963,7 +4975,7 @@ var INTELCENTER={
       var r=this._aiReports.find(function(x){return x.id===id;});
       if(r){
         r.title=title;r.country=country;r.threatLevel=level;r.reportType=reportType;r.reportMode=reportMode;
-        r.threatAnalysis=threatAnalysis;r.advice=advice;r.summary=summary;
+        r.threatAnalysis=threatAnalysis;r.impactAnalysis=impactAnalysis;r.advice=advice;r.summary=summary;
         r.elements=elements;r.materials=this._selectedMaterials.slice();r.updateTime=now;
       }
       showToast('\u2705 \u62a5\u544a\u5df2\u66f4\u65b0');
@@ -4971,7 +4983,7 @@ var INTELCENTER={
       var nid='AIR-'+String(Date.now()).slice(-6);
       this._aiReports.unshift({
         id:nid,title:title,country:country,threatLevel:level,reportType:reportType,reportMode:reportMode,
-        threatAnalysis:threatAnalysis,advice:advice,summary:summary,elements:elements,
+        threatAnalysis:threatAnalysis,impactAnalysis:impactAnalysis,advice:advice,summary:summary,elements:elements,
         materials:this._selectedMaterials.slice(),createTime:now,author:AUTH.user?AUTH.user.name:''
       });
       showToast('\u2705 AI\u60c5\u62a5\u5206\u6790\u62a5\u544a\u5df2\u4fdd\u5b58');
@@ -4986,9 +4998,9 @@ var INTELCENTER={
     // 根据报告分析模式确定各节标题
     var modeL={
       elements:{s:'📝 报告摘要',t:'🚧 对华威胁分析',a:'💡 对策建议',showEl:true},
-      strategic:{s:'📝 战略摘要',t:'🎯 战略现状分析与影响预测',a:'📋 对策建议',showEl:false},
+      strategic:{s:'📝 战略摘要',t:'🎯 战略现状分析',i:'📋 影响预测',a:'📋 对策建议',showEl:false},
       tactical:{s:'📝 事态摘要',t:'⚔️ 威胁评估与暴露面分析',a:'🛡️ 战术处置建议',showEl:false},
-      risk:{s:'📝 风险摘要',t:'📊 风险事件现状与对我威胁',a:'🛡️ 对策建议',showEl:false}
+      risk:{s:'📝 风险摘要',t:'📊 风险事件现状',i:'⚠️ 对我威胁',a:'🛡️ 对策建议',showEl:false}
     };
     var mL=modeL[r.reportMode]||modeL.elements;
     var lvClr=r.threatLevel==='critical'?'var(--red)':r.threatLevel==='high'?'var(--orange)':r.threatLevel==='medium'?'var(--yellow)':'var(--green)';
@@ -5031,6 +5043,10 @@ var INTELCENTER={
     if(r.threatAnalysis){
       html+='<div style="padding:10px;background:rgba(255,51,85,0.06);border:1px solid rgba(255,51,85,0.2);border-radius:6px;margin-bottom:12px"><b style="color:var(--red);font-size:11px">'+mL.t+'</b><div style="font-size:12px;color:var(--text2);margin-top:6px;white-space:pre-wrap">'+r.threatAnalysis+'</div></div>';
     }
+    // 影响预测/对我威胁（战略和风险评估模式独立显示）
+    if(mL.i&&r.impactAnalysis){
+      html+='<div style="padding:10px;background:rgba(255,170,0,0.06);border:1px solid rgba(255,170,0,0.2);border-radius:6px;margin-bottom:12px"><b style="color:var(--orange);font-size:11px">'+mL.i+'</b><div style="font-size:12px;color:var(--text2);margin-top:6px;white-space:pre-wrap">'+r.impactAnalysis+'</div></div>';
+    }
     // 对策/处置建议
     if(r.advice){
       html+='<div style="padding:10px;background:rgba(0,255,159,0.06);border:1px solid rgba(0,255,159,0.2);border-radius:6px;margin-bottom:12px"><b style="color:var(--green);font-size:11px">'+mL.a+'</b><div style="font-size:12px;color:var(--text2);margin-top:6px;white-space:pre-wrap">'+r.advice+'</div></div>';
@@ -5071,9 +5087,9 @@ var INTELCENTER={
     // 根据报告分析模式确定各节标题
     var modeLabels={
       elements:{summary:'报告摘要',threat:'对华威胁分析',advice:'对策建议',showElements:true},
-      strategic:{summary:'战略摘要',threat:'战略现状分析与影响预测',advice:'对策建议',showElements:false},
+      strategic:{summary:'战略摘要',threat:'战略现状分析',impact:'影响预测',advice:'对策建议',showElements:false},
       tactical:{summary:'事态摘要',threat:'威胁评估与暴露面分析',advice:'战术处置建议',showElements:false},
-      risk:{summary:'风险摘要',threat:'风险事件现状与对我威胁',advice:'对策建议',showElements:false}
+      risk:{summary:'风险摘要',threat:'风险事件现状',impact:'对我威胁',advice:'对策建议',showElements:false}
     };
     var ml=modeLabels[r.reportMode]||modeLabels.elements;
     var modeNameMap={'elements':'综合要素分析','strategic':'战略类情报分析','tactical':'战术类情报分析','risk':'风险评估类情报分析'};
@@ -5122,6 +5138,10 @@ var INTELCENTER={
     if(r.threatAnalysis){
       xml+=pHeading(ml.threat);
       xml+=paras(r.threatAnalysis,pBody);
+    }
+    if(ml.impact&&r.impactAnalysis){
+      xml+=pHeading(ml.impact);
+      xml+=paras(r.impactAnalysis,pBody);
     }
     if(r.advice){
       xml+=pHeading(ml.advice);
